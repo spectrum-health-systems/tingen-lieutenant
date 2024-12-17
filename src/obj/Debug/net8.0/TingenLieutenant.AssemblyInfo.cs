@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TingenLieutenant")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55dc9eb7301e427e91960ada6786410d792eb716")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b86af2755172108eea60371030c5e7755528f93d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TingenLieutenant")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TingenLieutenant")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

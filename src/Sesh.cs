@@ -8,67 +8,52 @@ namespace TingenLieutenant
 {
     public class Sesh
     {
-        /// <summary>DOC </summary>
-        public string LocalRoot { get; set; }
-
-        /// <summary>DOC </summary>
-        public string DataRoot { get; set; }
-
-        /// <summary>DOC </summary>
+        public string SessionRoot { get; set; }
         public string RemoteRoot { get; set; }
+        public string MainBranchUrl { get;set; }
+        public string DevelopmentBranchUrl { get; set; }
 
-        /// <summary>DOC</summary>
-        /// <param name="configFilePath"></param>
-        public static Sesh LoadConfiguration(string configFilePath)
+        public static Sesh LoadConfiguration(string filePath)
         {
-            VerifyConfigFileExists(configFilePath);
+            VerifyConfigFileExists(filePath);
 
-            return DuJson.ImportFromLocalFile<Sesh>(configFilePath);
+            return DuJson.ImportFromLocalFile<Sesh>(filePath);
         }
 
-        /// <summary>DOC</summary>
-        /// <param name="seshDataDirectory"></param>
-        public static void ResetSessionData(string seshDataDirectory)
+        public static void ResetSessionData(string sessionRoot)
         {
-            if (Directory.Exists(seshDataDirectory))
+            if (Directory.Exists(sessionRoot))
             {
-                Directory.Delete(seshDataDirectory, true);
+                Directory.Delete(sessionRoot, true);
             }
 
-            Directory.CreateDirectory(seshDataDirectory);
+            Directory.CreateDirectory(sessionRoot);
         }
 
-        /// <summary>DOC</summary>
-        /// <param name="configFilePath"></param>
-        private static void VerifyConfigFileExists(string configFilePath)
+        private static void VerifyConfigFileExists(string filePath)
         {
-            if (!File.Exists(configFilePath))
+            if (!File.Exists(filePath))
             {
-                CreateNewConfigFile(configFilePath);
+                CreateNewConfigFile(filePath);
             }
         }
 
-        /// <summary>DOC</summary>
-        /// <param name="configFilePath"></param>
-        private static void CreateNewConfigFile(string configFilePath)
+        private static void CreateNewConfigFile(string filePath)
         {
-            var configuration = BuildDefaultSession();
+            var configuration = BuildDefault();
 
-            DuJson.ExportToLocalFile<Sesh>(configuration, configFilePath);
+            DuJson.ExportToLocalFile<Sesh>(configuration, filePath);
         }
 
-        /// <summary>DOC</summary>
-        private static Sesh BuildDefaultSession()
+        private static Sesh BuildDefault()
         {
-            Sesh defaultSession = new Sesh
+            return new Sesh
             {
-                LocalRoot = @".\AppData",
-                RemoteRoot = @"C:\TingenData"
+                SessionRoot          = @".\AppData\Session",
+                RemoteRoot           = @"C:\TingenData",
+                MainBranchUrl        = "https://raw.githubusercontent.com/spectrum-health-systems/Tingen-Development/refs/heads/main/src/Tingen_development.asmx.cs",
+                DevelopmentBranchUrl = "https://raw.githubusercontent.com/spectrum-health-systems/Tingen-Development/refs/heads/development/src/Tingen_development.asmx.cs"
             };
-
-            defaultSession.DataRoot = $@"{defaultSession.LocalRoot}\Session";
-
-            return defaultSession;
         }
     }
 }

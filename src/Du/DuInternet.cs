@@ -7,19 +7,10 @@ namespace TingenLieutenant.Du
 {
     public class DuInternet
     {
-        //public void DownloadRepositoryFiles(string sessionData)
-        //{
-        //    DownloadInternetFile("https://raw.githubusercontent.com/spectrum-health-systems/Tingen-Development/refs/heads/main/src/Tingen_development.asmx.cs", $@"{sessionData}\Tingen_development_main.asmx");
-        //    DownloadInternetFile("https://raw.githubusercontent.com/spectrum-health-systems/Tingen-Development/refs/heads/development/src/Tingen_development.asmx.cs", $@"{sessionData}\Tingen_development.asmx");
-        //}
-
-        public static void DownloadFileFromURL(string toDownload, string toSave)
+        public static void DownloadFileFromURL(string downloadUrl, string filePath)
         {
-            var asmxUrl = toDownload;
-            var asmxDownloadPath = toSave;
-
             var client = new WebClient();
-            client.DownloadFile(asmxUrl, asmxDownloadPath);
+            client.DownloadFile(downloadUrl, filePath);
         }
     }
 }
