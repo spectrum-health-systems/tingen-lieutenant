@@ -10,8 +10,8 @@ namespace TingenLieutenant
     /// <summary>Configuration-related stuff for the Tingen Lieutenant application.</summary>
     class Configuration
     {
-        public string TngnServerUnc { get; set; }
-        public string TngnServiceData { get; set; }
+        public string ServerUnc { get; set; }
+        public string ServiceDataRoot { get; set; }
 
         /// <summary> Load the Tingen Lieutenant configuration file.</summary>
         /// <param name="configFilePath">The path to the Tingen Lieutenant configuration file.</param>
@@ -41,8 +41,8 @@ namespace TingenLieutenant
         {
             return new Configuration
             {
-                TngnServerUnc   = "SHS-AZU-NSWS-01",
-                TngnServiceData = "TingenData"
+                ServerUnc   = "YOUR-SERVER-UNC-HERE",
+                ServiceDataRoot = "TingenData"
             };
         }
     }

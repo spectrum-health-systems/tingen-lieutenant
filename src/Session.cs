@@ -3,24 +3,16 @@
 
 namespace TingenLieutenant
 {
-    class Session
+    public class Session
     {
-        public string LtntDataRoot { get; set; }
-        public string TngnServiceDataRoot { get; set; }
-
-        public string LtntVerificationFile { get; set; }
-
-        internal static Session Create()
+        public string SessionDataRoot { get; set; }
+        public string ServiceDataRoot { get; set; }
+        internal static Session Create(string serverUnc, string serviceDataRoot)
         {
-            const string ltntDataRoot = @".\AppData";
-
-            Configuration ltntConfig = Configuration.Load($@"{ltntDataRoot}\TngnLtnt.settings");
-
-            return new Session()
+            return new Session
             {
-                LtntDataRoot         = ltntDataRoot,
-                TngnServiceDataRoot  = $@"\\{ltntConfig.TngnServerUnc}\{ltntConfig.TngnServiceData}",
-                LtntVerificationFile = @"\Lieutenant\tingen.lieutenant"
+                SessionDataRoot = $@".\AppData\Session\{DateTime.Now.ToString("yyMMdd.hhss")}",
+                ServiceDataRoot = $@"\\{serverUnc}\{serviceDataRoot}",
             };
         }
     }

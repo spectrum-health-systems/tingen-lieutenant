@@ -12,7 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Tingen Commander"
     Width="900"
-    Height="500"
+    Height="550"
     Background="#f3e8d2"
     ResizeMode="NoResize"
     mc:Ignorable="d">
@@ -27,6 +27,196 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Source="AppData/Image/Logo/TingenLieutenant_logo.png" />
+
+        <!--  Status  -->
+        <Label
+            x:Name="lblStatusHeader"
+            Width="184"
+            Margin="10,259,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Web service status" />
+        <Label
+            x:Name="lblStatus"
+            Width="184"
+            Margin="10,286,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            Background="LightGray"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Unknown" />
+
+        <!--  Version  -->
+        <Label
+            x:Name="lblVersionHeader"
+            Width="75"
+            Margin="10,319,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="right"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Version" />
+        <Label
+            x:Name="lblVersion"
+            Width="110"
+            Margin="84,319,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="---" />
+
+        <!--  Build  -->
+        <Label
+            x:Name="lblBuildHeader"
+            Width="75"
+            Margin="10,346,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="right"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Build" />
+        <Label
+            x:Name="lblBuild"
+            Width="110"
+            Margin="84,346,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="---" />
+
+        <!--  Updated  -->
+        <Label
+            x:Name="lblUpdatedHeader"
+            Width="75"
+            Margin="10,373,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="right"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Updated" />
+        <Label
+            x:Name="lblUpdated"
+            Width="110"
+            Margin="84,373,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="---" />
+
+        <!--  Documentation  -->
+        <Button
+            x:Name="btnDocumentation"
+            Width="164"
+            Height="26"
+            Margin="20,406,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="btnDocumentation_Click"
+            Content="Documentation">
+            <Button.Effect>
+                <DropShadowEffect />
+            </Button.Effect>
+        </Button>
+
+        <!--  Data  -->
+        <Label
+            x:Name="lblData"
+            Height="32"
+            Margin="709,10,7,0"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="DATA" />
+        <Button
+            x:Name="btnAlerts"
+            Height="26"
+            Margin="719,47,17,0"
+            VerticalAlignment="Top"
+            Click="btnAlerts_Click_1"
+            Content="Alerts">
+            <Button.Effect>
+                <DropShadowEffect />
+            </Button.Effect>
+        </Button>
+
+
+        <Label
+            x:Name="lblModOpenIncidentFormHeader"
+            Width="250"
+            Height="32"
+            Margin="199,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="2"
+            Content="modOpenIncidentForm"
+            FontSize="14" />
+        <Label
+            x:Name="lblModOpenIncidentStatusHeader"
+            Width="115"
+            Height="25"
+            Margin="209,41,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Status" />
+        <Label
+            x:Name="lblModOpenIncidentStatus"
+            Width="115"
+            Height="25"
+            Margin="209,65,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Content="Unknown" />
+        <Button
+            x:Name="btnModOpenIncidentFormMoreInfo"
+            Width="111"
+            Height="26"
+            Margin="329,52,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="btnDocumentation_Click"
+            Content="More information">
+            <Button.Effect>
+                <DropShadowEffect />
+            </Button.Effect>
+        </Button>
+        <Label
+            x:Name="lblModOpenIncidentFormHeader_Copy"
+            Width="250"
+            Height="32"
+            Margin="454,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            BorderBrush="Black"
+            BorderThickness="2"
+            Content="modOpenIncidentForm"
+            FontSize="14" />
+
     </Grid>
 
 </Window>
