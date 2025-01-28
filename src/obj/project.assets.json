@@ -1,23 +1,23 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0-windows7.0": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Chris.Banwarth\\.nuget\\packages\\": {},
+    "D:\\packages\\NuGet\\cache": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.1.0",
     "restore": {
       "projectUniqueName": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
       "projectName": "TingenLieutenant",
       "projectPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
-      "packagesPath": "C:\\Users\\Chris.Banwarth\\.nuget\\packages\\",
+      "packagesPath": "D:\\packages\\NuGet\\cache",
       "outputPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
@@ -29,15 +29,15 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net8.0"
+        "net8.0-windows"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
           "projectReferences": {}
         }
       },
@@ -54,8 +54,8 @@
       "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
-      "net8.0": {
-        "targetAlias": "net8.0",
+      "net8.0-windows7.0": {
+        "targetAlias": "net8.0-windows",
         "imports": [
           "net461",
           "net462",
@@ -70,9 +70,12 @@
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WPF": {
+            "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
