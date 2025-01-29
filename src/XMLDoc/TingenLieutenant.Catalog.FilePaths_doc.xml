@@ -1,0 +1,42 @@
+﻿<TingenLieutenant.Catalog.FilePaths>
+
+    <!-- Classes  -->
+    <Type name="Class">
+
+        <!-- FilePaths.cs  -->
+        <FilePaths>
+            <remarks>
+                <para>
+                    File paths defined here:
+                    <list type="bullet">
+                        <item>Do not include file <i>names</i></item>
+                        <item>Do not include trailing slashes</item>
+                    </list>
+                </para>
+                <para>
+                    File paths use the following abbreviations:
+                    <list type="bullet">
+                        <item><c>Ltnt</c> =</item>
+                        <description>Tingen Lieutenant</description>
+                        <item><c>Tngn</c> =</item>
+                        <description>The Tingen web service</description>
+                    </list>
+                </para>
+            </remarks>
+            <seealso href="https://github.com/spectrum-health-systems/Tingen-Documentation">Tingen documentation</seealso>
+        </FilePaths>
+
+    </Type>
+
+    <!-- Properties -->
+    <Type name="Property">
+
+       
+    </Type>
+
+    <!-- Methods -->
+    <Type name="Method">
+
+    </Type>
+
+</TingenLieutenant.Catalog.FilePaths>

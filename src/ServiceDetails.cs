@@ -18,7 +18,7 @@ namespace TingenLieutenant
 
         internal static ServiceDetails Load(string serviceDataRoot)
         {
-            Verify.ServiceDetailsFile(serviceDataRoot);
+            Verify.TingenConfigurationFile(serviceDataRoot);
 
             return DuJson.ImportFromLocalFile<ServiceDetails>($@"{serviceDataRoot}\Lieutenant\LIVE.json");
         }

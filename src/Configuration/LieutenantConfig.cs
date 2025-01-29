@@ -1,14 +1,13 @@
-﻿// u250128_code
-// u250128_documentation
+﻿// u250129_code
+// u250129_documentation
 
 using System.IO;
 
 using TingenLieutenant.Du;
 
-namespace TingenLieutenant
+namespace TingenLieutenant.Configuration
 {
-    /// <summary>Configuration-related stuff for the Tingen Lieutenant application.</summary>
-    class Configuration
+    public class LieutenantConfig
     {
         public string ServerUnc { get; set; }
         public string ServiceDataRoot { get; set; }
@@ -16,14 +15,14 @@ namespace TingenLieutenant
         /// <summary> Load the Tingen Lieutenant configuration file.</summary>
         /// <param name="configFilePath">The path to the Tingen Lieutenant configuration file.</param>
         /// <returns>The Tingen Lieutenant configuration object.</returns>
-        internal static Configuration Load(string configFilePath)
+        internal static LieutenantConfig Load(string configFilePath)
         {
             if (!File.Exists(configFilePath))
             {
                 Create(configFilePath);
             }
 
-            return DuJson.ImportFromLocalFile<Configuration>(configFilePath);
+            return DuJson.ImportFromLocalFile<LieutenantConfig>(configFilePath);
         }
 
         /// <summary>Create a default Tingen Lieutenant configuration file.</summary>
@@ -32,14 +31,14 @@ namespace TingenLieutenant
         {
             var defaultConfig = Build();
 
-            DuJson.ExportToLocalFile<Configuration>(defaultConfig, configFilePath);
+            DuJson.ExportToLocalFile<LieutenantConfig>(defaultConfig, configFilePath);
         }
 
         /// <summary>Build the default Tingen Lieutenant configuration object.</summary>
         /// <returns>A default Tingen Lieutenant configuration object.</returns>
-        private static Configuration Build()
+        private static LieutenantConfig Build()
         {
-            return new Configuration
+            return new LieutenantConfig
             {
                 ServerUnc   = "YOUR-SERVER-UNC-HERE",
                 ServiceDataRoot = "TingenData"

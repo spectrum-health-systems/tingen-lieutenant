@@ -1,15 +1,14 @@
-﻿// ================================================================= 0.1.0 =====
+﻿// ================================================================ v0.1.0 =====
 // Tingen Lieutenant: A workstation GUI for the Tingen web service.
-// Repository: https://github.com/spectrum-health-systems/Tingen-Commander
+// Repository: https://github.com/spectrum-health-systems/Tingen-Lieutenant
 // Documentation: https://github.com/spectrum-health-systems/Tingen-Documentation
 // Copyright (c) A Pretty Cool Program. All rights reserved.
 // Licensed under the Apache 2.0 license.
-// ================================================================ 250128 =====
+// =============================================================== b250129 =====
 
-// u250128_code
-// u250128_documentation
+// u250129_code
+// u250129_documentation
 
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -21,23 +20,40 @@ namespace TingenLieutenant
     /// <summary>Interaction logic for MainWindow.xaml</summary>
     public partial class MainWindow : Window
     {
+        //-- Defined here so it can be used everywhere.
         public Session session { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            /* The path to the configuration file is hard coded, and should not be modified.
-               */
-            Configuration config = Configuration.Load(@"./AppData/TngnLtnt.settings");
+            session = Session.Create();
 
-            //Session session = Session.Create(config.ServerUnc, config.ServiceDataRoot);
 
-            session = Session.Create(config.ServerUnc, config.ServiceDataRoot);
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ///* The path to the configuration file is hard coded, and should not be modified.
+            //   */
+            //LieutenantConfig ltntConfig = LieutenantConfig.Load($@"{commonPaths["ltntDataRoot"]}/{commonNames["ltntConfigFile"]}");
+            //session = Session.Create(ltntConfig.ServerUnc, ltntConfig.ServiceDataRoot);
+
+
+
 
             VerifyComponents(session);
 
-            var serviceDetail = ServiceDetails.Load(session.ServiceDataRoot);
+            var serviceDetail = ServiceDetails.Load(session.TngnDataRoot);
 
             if (serviceDetail.ServiceMode.Equals("enabled", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -60,9 +76,9 @@ namespace TingenLieutenant
 
         internal static void VerifyComponents(Session session)
         {
-            Verify.ServerAccess(session.ServiceDataRoot);
-            Verify.ServiceDetailsFile(session.ServiceDataRoot);
-            Verify.SessionRoot(session.SessionDataRoot);
+            Verify.ServerAccess(session.TngnDataRoot);
+            Verify.TingenConfigurationFile(session.TngnDataRoot);
+            Verify.SessionRoot(session.CurrentSessionDataRoot);
         }
 
         internal void SetLabelProperties(System.Windows.Controls.Label label, string content, Brush background, Brush foreground)
@@ -80,7 +96,7 @@ namespace TingenLieutenant
         private void btnAlerts_Click(object sender, RoutedEventArgs e)
         {
             //var t = Directory.GetFiles(@"\\SHS-AZU-NSWS-01\TingenData\");
-            var t = Directory.GetFiles(session.ServiceDataRoot);
+            var t = Directory.GetFiles(session.TngnDataRoot);
 
 
             var u=8;
@@ -88,7 +104,10 @@ namespace TingenLieutenant
 
         private void btnAlerts_Click_1(object sender, RoutedEventArgs e)
         {
-            DuExplorer.OpenFolder($@"{session.ServiceDataRoot}\LIVE\Messages\Alerts");
+            DuExplorer.OpenFolder($@"{session.TngnDataRoot}\LIVE\Messages\Alerts");
         }
+
+
+
     }
 }

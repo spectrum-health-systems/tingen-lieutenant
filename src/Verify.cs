@@ -12,19 +12,28 @@ namespace TingenLieutenant
     {
         internal static void ServerAccess(string serviceDataRoot)
         {
-            if (!File.Exists($@"{serviceDataRoot}\README.md"))
-            {
-                var msg = Catalog.Msg_ServerNotFound();
-                MessageBox.Show(msg);
-                Environment.Exit(1);
-            }
+
+            //if (!File.Exists($@"{serviceDataRoot}\README.md"))
+            //{
+            //    var msg = Catalog.Msg_ServerNotFound();
+            //    MessageBox.Show(msg);
+            //    Environment.Exit(1);
+            //}
+
+            //if (!File.Exists($@"{serviceDataRoot}\README.md"))
+            //{
+            //    var msg = Catalog.Msg_ServerNotFound();
+            //    MessageBox.Show(msg);
+            //    Environment.Exit(1);
+            //}
         }
-        internal static void ServiceDetailsFile(string serviceDataRoot)
+        internal static void TingenConfigurationFile(string serviceDataRoot)
         {
-            if (!File.Exists($@"{serviceDataRoot}\Lieutenant\LIVE.json"))
+            if (!File.Exists($@"{serviceDataRoot}\LIVE\Config\Tingen.config"))
             {
-                var msg = Catalog.Msg_ServiceDetailNotFound();
-                MessageBox.Show(msg);
+                Dictionary<string, string> msg = Catalog.UserMessages.MsgTingenConfigNotFound();
+                MessageBox.Show(msg["Message"], msg["Title"]);
+                //MessageBox.Show(msg);
                 Environment.Exit(1);
             }
         }
