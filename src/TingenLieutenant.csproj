@@ -1,9 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Title>Tingen Lieutenant</Title>
+    <Version>0.1.0</Version>
+    <Authors>A Pretty Cool Program</Authors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="AppData\Image\Logo\TingenLieutenant_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AppData\Image\Logo\TingenLieutenant_logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AppData\README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="XMLDoc\generatedXML\" />
+  </ItemGroup>
 
 </Project>
