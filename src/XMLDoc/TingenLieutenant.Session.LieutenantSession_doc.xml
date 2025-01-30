@@ -1,10 +1,26 @@
-﻿<TingenLieutenant.Catalog.FilePaths>
+﻿<TingenLieutenant.Session.LieutenantSession>
 
     <!-- Class  -->
     <Type name="Class">
 
-        <!-- FilePaths.cs  -->
-        <FilePaths>
+        <!-- LieutenantSession.cs  -->
+        <LieutenantSession>
+            <remarks>
+            </remarks>
+            <seealso href="https://github.com/spectrum-health-systems/Tingen-Documentation">Tingen documentation</seealso>
+        </LieutenantSession>
+    </Type>
+
+    <!-- Properties -->
+    <Type name="Property">
+
+    </Type>
+
+    <!-- Methods -->
+    <Type name="Method">
+
+        <!-- Create()  -->
+        <Create>
             <remarks>
                 <para>
                     File paths defined here:
@@ -23,20 +39,8 @@
                     </list>
                 </para>
             </remarks>
-            <seealso href="https://github.com/spectrum-health-systems/Tingen-Documentation">Tingen documentation</seealso>
-        </FilePaths>
+        </Create>
 
     </Type>
 
-    <!-- Properties -->
-    <Type name="Property">
-
-       
-    </Type>
-
-    <!-- Methods -->
-    <Type name="Method">
-
-    </Type>
-
-</TingenLieutenant.Catalog.FilePaths>
+</TingenLieutenant.Session.LieutenantSession>

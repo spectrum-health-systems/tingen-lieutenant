@@ -1,5 +1,6 @@
 ﻿// u250129_code
 // u250129_documentation
+// u250130_xmldocumentation
 
 namespace TingenLieutenant.Catalog
 {
@@ -14,7 +15,7 @@ namespace TingenLieutenant.Catalog
         /// <summary>The name of the Tingen data root directory.</summary>
         public string TngnDataRoot { get; set; }
 
-        internal static FilePaths GetCommon()
+        internal static FilePaths Initialize()
         {
             /* The data roots for Tingen Lieutenant and the Tingen web service are hard coded, and should not be modified.
                */

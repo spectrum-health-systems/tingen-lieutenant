@@ -1,5 +1,6 @@
 ﻿// u250129_code
 // u250129_documentation
+// u250130_xmldocumentation
 
 namespace TingenLieutenant.Catalog
 {
@@ -13,7 +14,7 @@ namespace TingenLieutenant.Catalog
 
         /// <summary>Add comment here</summary>
         /// <returns></returns>
-        internal static FileNames GetCommon()
+        internal static FileNames Initialize()
         {
             return new FileNames()
             {

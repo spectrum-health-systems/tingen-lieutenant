@@ -1,11 +1,12 @@
-﻿// u250121_code
-// u250109_documentation
+﻿// u250130_code
+// u250130_documentation
 
 using System.IO;
 using System.Text.Json;
 
 namespace TingenLieutenant.Du
 {
+    /// <summary>A collection of methods for working with JSON data.</summary>
     internal class DuJson
     {
         /// <summary>Export JSON data to an external file. [250108]</summary>

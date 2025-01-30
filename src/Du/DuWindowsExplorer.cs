@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// u250130_code
+// u250130_documentation
+
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TingenLieutenant.Du
 {
-    class DuExplorer
+    /// <summary>TBD</summary>
+    class DuWindowsExplorer
     {
+        /// <summary>Open a folder in Windows Explorer.</summary>
+        /// <param name="folder"></param>
         public static void OpenFolder(string folder)
         {
             ProcessStartInfo _processStartInfo = new ProcessStartInfo
@@ -17,7 +18,6 @@ namespace TingenLieutenant.Du
                 UseShellExecute = true
             };
             Process.Start(_processStartInfo);
-
         }
     }
 }

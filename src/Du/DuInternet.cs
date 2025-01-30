@@ -1,17 +1,15 @@
-﻿// u250128_code
-// u250128_documentation
+﻿// u250130_code
+// u250130_documentation
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TingenLieutenant.Du
 {
+    /// <summary>TBD</summary>
     class DuInternet
     {
+        /// <summary>Open a URL in the default browser.</summary>
+        /// <param name="url"></param>
         public static void OpenUrl(string url)
         {
             ProcessStartInfo _processStartInfo = new ProcessStartInfo
@@ -20,7 +18,6 @@ namespace TingenLieutenant.Du
                 UseShellExecute = true
             };
             Process.Start(_processStartInfo);
-
         }
     }
 }

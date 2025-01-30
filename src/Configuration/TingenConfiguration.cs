@@ -1,5 +1,6 @@
 ﻿// u250129_code
 // u250129_documentation
+// u250130_xmldocumentation
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using TingenLieutenant.Du;
 
 namespace TingenLieutenant.Configuration
 {
-    public class TingenConfig
+    public class TingenConfiguration
     {
         public string TngnVersion { get; set; } = "00.00.0.0";
         public string TngnBuild { get; set; } = "000000";
@@ -20,7 +21,7 @@ namespace TingenLieutenant.Configuration
         public string TngnTraceLevel { get; set; }
         public string TngnTraceDelay { get; set; }
 
-        public static TingenConfig Load(string configPath)
+        public static TingenConfiguration Load(string configPath)
         {
             if (!File.Exists(configPath))
             {
@@ -32,7 +33,7 @@ namespace TingenLieutenant.Configuration
                 //}
             }
 
-            return DuJson.ImportFromLocalFile<TingenConfig>(configPath);
+            return DuJson.ImportFromLocalFile<TingenConfiguration>(configPath);
         }
     }
 }

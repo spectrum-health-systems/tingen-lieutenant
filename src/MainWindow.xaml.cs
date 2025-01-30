@@ -1,19 +1,25 @@
-﻿// ================================================================ v0.1.0 =====
-// Tingen Lieutenant: A workstation GUI for the Tingen web service.
-// Repository: https://github.com/spectrum-health-systems/Tingen-Lieutenant
-// Documentation: https://github.com/spectrum-health-systems/Tingen-Documentation
-// Copyright (c) A Pretty Cool Program. All rights reserved.
-// Licensed under the Apache 2.0 license.
-// =============================================================== b250129 =====
+﻿/* ================================================================ v0.1.0 =====
+ * Tingen Lieutenant: A workstation GUI for the Tingen web service.
+ * Repository: https://github.com/spectrum-health-systems/Tingen-Lieutenant
+ * Documentation: https://github.com/spectrum-health-systems/Tingen-Documentation
+ * Copyright (c) A Pretty Cool Program. All rights reserved.
+ * Licensed under the Apache 2.0 license.
+ * =============================================================== b250130 =====
+ */
 
-// u250129_code
-// u250129_documentation
+/* Please see the TingenLieutenant_README.md file for more information.
+*/
+
+// u250130_code
+// u250130_documentation
+// u250130_xmldocumentation
 
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 
 using TingenLieutenant.Du;
+using TingenLieutenant.Session;
 
 namespace TingenLieutenant
 {
@@ -21,13 +27,14 @@ namespace TingenLieutenant
     public partial class MainWindow : Window
     {
         //-- Defined here so it can be used everywhere.
-        public Session session { get; set; }
+        public LieutenantSession LtntSession { get; set; }
 
+        /// <summary>Comment.</summary>
         public MainWindow()
         {
             InitializeComponent();
 
-            session = Session.Create();
+            LtntSession = LieutenantSession.Create();
 
 
 
@@ -51,9 +58,9 @@ namespace TingenLieutenant
 
 
 
-            VerifyComponents(session);
+            VerifyComponents(LtntSession);
 
-            var serviceDetail = ServiceDetails.Load(session.TngnDataRoot);
+            var serviceDetail = ServiceDetails.Load(LtntSession.TngnDataRoot);
 
             if (serviceDetail.ServiceMode.Equals("enabled", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -74,7 +81,7 @@ namespace TingenLieutenant
 
         }
 
-        internal static void VerifyComponents(Session session)
+        internal static void VerifyComponents(LieutenantSession session)
         {
             Verify.ServerAccess(session.TngnDataRoot);
             Verify.TingenConfigurationFile(session.TngnDataRoot);
@@ -96,7 +103,7 @@ namespace TingenLieutenant
         private void btnAlerts_Click(object sender, RoutedEventArgs e)
         {
             //var t = Directory.GetFiles(@"\\SHS-AZU-NSWS-01\TingenData\");
-            var t = Directory.GetFiles(session.TngnDataRoot);
+            var t = Directory.GetFiles(LtntSession.TngnDataRoot);
 
 
             var u=8;
@@ -104,7 +111,7 @@ namespace TingenLieutenant
 
         private void btnAlerts_Click_1(object sender, RoutedEventArgs e)
         {
-            DuExplorer.OpenFolder($@"{session.TngnDataRoot}\LIVE\Messages\Alerts");
+            DuWindowsExplorer.OpenFolder($@"{LtntSession.TngnDataRoot}\LIVE\Messages\Alerts");
         }
 
 

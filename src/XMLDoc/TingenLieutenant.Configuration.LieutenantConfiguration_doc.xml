@@ -1,0 +1,18 @@
+﻿<TingenLieutenant.Configuration.LieutenantConfiguration>
+
+    <!-- Class  -->
+    <Type name="Class">
+
+    </Type>
+
+    <!-- Properties -->
+    <Type name="Property">
+
+    </Type>
+
+    <!-- Methods -->
+    <Type name="Method">
+
+    </Type>
+
+</TingenLieutenant.Configuration.LieutenantConfiguration>
