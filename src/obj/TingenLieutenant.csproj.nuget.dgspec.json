@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj": {}
+    "C:\\IT\\CSB_Development\\GitHub\\Spectrum - Tingen\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj": {}
   },
   "projects": {
-    "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj": {
+    "C:\\IT\\CSB_Development\\GitHub\\Spectrum - Tingen\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj": {
       "version": "0.1.0",
       "restore": {
-        "projectUniqueName": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
+        "projectUniqueName": "C:\\IT\\CSB_Development\\GitHub\\Spectrum - Tingen\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
         "projectName": "TingenLieutenant",
-        "projectPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
+        "projectPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum - Tingen\\Tingen-Lieutenant\\src\\TingenLieutenant.csproj",
         "packagesPath": "D:\\packages\\NuGet\\cache",
-        "outputPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum\\Tingen-Lieutenant\\src\\obj\\",
+        "outputPath": "C:\\IT\\CSB_Development\\GitHub\\Spectrum - Tingen\\Tingen-Lieutenant\\src\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
