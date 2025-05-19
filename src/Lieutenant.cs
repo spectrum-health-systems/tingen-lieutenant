@@ -12,7 +12,7 @@
  * ███████╗██║███████╗╚██████╔╝   ██║   ███████╗██║ ╚████║██║  ██║██║ ╚████║   ██║
  * ╚══════╝╚═╝╚══════╝ ╚═════╝    ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
  *                                             A class library for Tingen projects
- *                                                                 Release 25.5.0
+ *                                                                  Release 25.5.0
  *
  * https://github.com/APrettyCoolProgram/Tingen-Lieutenant
  * Copyright (c) A Pretty Cool Program. All rights reserved.
@@ -22,7 +22,8 @@
 // u250519_code
 // u250519_documentation
 
-namespace Tingen_Lieutenant
+
+namespace TingenLieutenant
 {
     public class Lieutenant
     {
