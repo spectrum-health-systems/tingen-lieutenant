@@ -8,9 +8,11 @@
  *                                            TingenLieutenant.Deployer.Deploy.cs
  */
 
-// u250520_code
-// u250520_documentation
+// u250521_code
+// u250521_documentation
 
+using System.IO.Compression;
+using System.Net;
 using System.Text.Json;
 
 namespace TingenLieutenant.Deployer
@@ -28,17 +30,52 @@ namespace TingenLieutenant.Deployer
         /// <summary>Location of the repository to be deployed.</summary>
         /// <remarks>
         ///     <para>
-        ///         The location can be a URL or a local directory path.<br/>
+        ///         The RepositoryPath can either be a URL,or a directory.<br/>
+        ///         <br/>
+        ///         If the RepositoryPath is a URL:
+        ///         <list type="bullet">
+        ///             <item>It must point to a zip file</item>
+        ///             <item>It must formatted correctly</item>
+        ///         </list>
+        ///         If the RepositoryPath is a directory:
+        ///         <list type="bullet">
+        ///             <item>It can be a local directory</item>
+        ///             <item>It can be a network share/mapped drive</item>
+        ///         </list>
         ///     </para>
         /// </remarks>
         /// <value>The default value is "<c>https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip</c>"</value>
         public string RepositoryPath { get; set; }
 
         /// <summary>Root of the DevDeploy staging area.</summary>
+        /// <remarks>
+        ///     <para>
+        ///     The DevDeployRoot is the location where the repository will be unzipped and staged for deployment.<br/>
+        ///     </para>
+        ///     <para>
+        ///         The DevDeployRoot:<br/>
+        ///         <list type="bullet">
+        ///             <item>Can be a local directory</item>
+        ///             <item>Can be a network share/mapped drive</item>
+        ///         </list>
+        ///     </para>
+        /// </remarks>
         /// <value>The default value is "<c>C:\Tingen_Data\DevDeploy</c>"</value>
         public string DevDeployRoot { get; set; }
 
         /// <summary>Root of the service being deployed.</summary>
+        /// <remarks>
+        ///     <para>
+        ///     The TargetRoot is the location where the repository will be deployed.<br/>
+        ///     </para>
+        ///     <para>
+        ///         The TargetRoot:<br/>
+        ///         <list type="bullet">
+        ///             <item>Can be a local directory</item>
+        ///             <item>Can be a network share/mapped drive</item>
+        ///         </list>
+        ///     </para>
+        /// </remarks>
         /// <value>The default value is "<c>C:\Tingen\UAT</c>"</value>
         public string TargetRoot { get; set; }
 
@@ -84,6 +121,9 @@ namespace TingenLieutenant.Deployer
                         : "exists";
         }
 
+        /// <summary>Determines the status of the deployment root.</summary>
+        /// <param name="devDeployRoot">The path to the development deployment root directory to check.</param>
+        /// <returns>A string indicating the status of the deployment root.</returns>
         public static string GetDevDeployRootStatus(string devDeployRoot)
         {
             return string.IsNullOrEmpty(devDeployRoot)
@@ -93,6 +133,10 @@ namespace TingenLieutenant.Deployer
                     : "exists";
         }
 
+
+        /// <summary>Determines the status of the target root.</summary>
+        /// <param name="targetRoot">The path to the target root directory to check. This can be a relative or absolute path.</param>
+        /// <returns>A string representing the status of the target root.</returns>
         public static string GetTargetRootStatus(string targetRoot)
         {
             return string.IsNullOrEmpty(targetRoot)
@@ -135,7 +179,47 @@ namespace TingenLieutenant.Deployer
             return JsonSerializer.Deserialize<Deploy>(deployConfig);
         }
 
+        /// <summary>Cleans and recreates the staging directory.</summary>
+        /// <param name="devDeployRoot">The root directory of the development deployment.</param>
+        public static void CleanStaging(string devDeployRoot)
+        {
+            if (Directory.Exists($@"{devDeployRoot}\staging"))
+            {
+                Directory.Delete($@"{devDeployRoot}\staging", true);
+            }
 
+            Directory.CreateDirectory($@"{devDeployRoot}\staging");
+        }
+
+        /// <summary>Cleans and prepares the specified target.</summary>
+        /// <param name="targetRoot">The root directory to clean and initialize. Must be a valid directory path.</param>
+        public static void CleanTarget(string targetRoot)
+        {
+            if (Directory.Exists($@"{targetRoot}"))
+            {
+                Directory.Delete($@"{targetRoot}", true);
+            }
+
+            Directory.CreateDirectory($@"{targetRoot}");
+            Directory.CreateDirectory($@"{targetRoot}\bin");
+            Directory.CreateDirectory($@"{targetRoot}\bin\roslyn");
+            Directory.CreateDirectory($@"{targetRoot}\bin\AppData");
+            Directory.CreateDirectory($@"{targetRoot}\bin\Runtime");
+        }
+
+        /// <summary>Downloads and extracts a remote repository.</summary>
+        /// <param name="repoPath">The URL of the remote repository archive to download.</param>
+        /// <param name="devDeployRoot">The root directory where the repository archive will be staged.</param>
+        public static void GetRemoteRepostitory(string repoPath, string devDeployRoot)
+        {
+            var client = new WebClient();
+            client.DownloadFile(repoPath, $@"{devDeployRoot}\staging\webservice.zip");
+            ZipFile.ExtractToDirectory($@"{devDeployRoot}\staging\webservice.zip", $@"{devDeployRoot}\staging\");
+        }
+
+        /// <summary>Copies all files and subdirectories from the specified source directory to the target directory.</summary>
+        /// <param name="sourcePath">The path of the directory to copy. Must be a valid, existing directory.</param>
+        /// <param name="targetPath">The path of the target directory where the contents will be copied.</param>
         public static void CopyDirectory(string sourcePath, string targetPath)
         {
             DirectoryInfo dirToCopy = new DirectoryInfo(sourcePath);
@@ -154,11 +238,29 @@ namespace TingenLieutenant.Deployer
             }
         }
 
+        /// <summary>Retrieves the subdirectories of the specified directory path.</summary>
+        /// <param name="sourcePath">The path of the directory whose subdirectories are to be retrieved.</param>
+        /// <returns>An array of <see cref="DirectoryInfo"/> objects representing the subdirectories of the specified directory.</returns>
         private static DirectoryInfo[] GetSubDirs(string sourcePath)
         {
             DirectoryInfo dirToCopy = new DirectoryInfo(sourcePath);
 
             return dirToCopy.GetDirectories();
+        }
+
+        /// <summary>Retrieves a list of service-related file names.</summary>
+        /// <returns>A list of strings representing the names of service-related files.</returns>
+        public static List<string> ListOfServiceFiles()
+        {
+            return
+            [
+                "TingenWebService.asmx",
+                "TingenWebService.asmx.cs",
+                "packages.config",
+                "Web.config",
+                "Web.Debug.config",
+                "Web.Release.config"
+            ];
         }
     }
 }
