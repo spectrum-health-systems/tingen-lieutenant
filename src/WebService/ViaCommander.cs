@@ -5,7 +5,7 @@
  * ██      ██ ███████ ██    ██ ████████ ███████ ███    ██  █████  ███    ██ ████████
  * ██      ██ █████   ██    ██    ██    █████   ██ ██  ██ ███████ ██ ██  ██    ██
  * ███████ ██ ███████  ██████     ██    ███████ ██   ████ ██   ██ ██   ████    ██
- *                                      TingenLieutenant.Deployer.ViaCommander.cs
+ *                                    TingenLieutenant.WebService.ViaCommander.cs
  */
 
 // u250520_code
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TingenLieutenant.Deployer
+namespace TingenLieutenant.WebServiceDeployer
 {
     internal class ViaCommander
     {
