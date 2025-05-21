@@ -206,7 +206,7 @@ namespace TingenLieutenant.WebService
             {
                 RepositoryPath = "https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip",
                 StagingPath    = @"C:\Tingen_Data\WebService\staging",
-                DeployPath = @"C:\Tingen\UAT"
+                DeployPath     = @"C:\Tingen\UAT"
             };
         }
 
@@ -243,6 +243,10 @@ namespace TingenLieutenant.WebService
             }
 
             Directory.CreateDirectory($@"{stagingRoot}");
+            Directory.CreateDirectory($@"{stagingRoot}\bin");
+            Directory.CreateDirectory($@"{stagingRoot}\bin\roslyn");
+            Directory.CreateDirectory($@"{stagingRoot}\bin\AppData");
+            Directory.CreateDirectory($@"{stagingRoot}\bin\AppData\Runtime");
         }
 
         /// <summary>Cleans and prepares the specified target.</summary>

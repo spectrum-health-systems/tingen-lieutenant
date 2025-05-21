@@ -45,11 +45,28 @@ namespace TingenLieutenant.WebServiceDeployer
             if (repoIsRemote)
             {
                 GetRemoteRepostitory(deployConfig.RepositoryPath, deployConfig.StagingPath);
-                deployConfig.StagingPath = $@"{deployConfig.StagingPath}\tingen-web-service-development";
+                deployConfig.StagingPath = $@"{deployConfig.StagingPath}\tingen-web-service-development\src";
             }
             else
             {
-                //deployConfig.StagingRoot = $@"{deployConfig.StagingRoot}\staging\";
+                Console.WriteLine($@"Deploying web service from [{deployConfig.RepositoryPath}] to [{deployConfig.StagingPath}]");
+
+                Console.WriteLine($@"Copying [{deployConfig.RepositoryPath}\src\bin] to [{deployConfig.StagingPath}\bin]");
+                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\", $@"{deployConfig.StagingPath}\bin\");
+
+                Console.WriteLine($@"Copying [$@""{deployConfig.RepositoryPath}\src\bin\AppData] to [$@""{deployConfig.StagingPath}\bin\AppData]");
+                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\AppData", $@"{deployConfig.StagingPath}\bin\AppData");
+
+                Console.WriteLine($@"Copying [$@""{deployConfig.RepositoryPath}\src\bin\AppData\Runtime] to [$@""{deployConfig.StagingPath}\bin\AppData\Runtime]");
+                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\AppData\Runtime", $@"{deployConfig.StagingPath}\bin\AppData\Runtime");
+
+                Console.WriteLine($@"Copying [{deployConfig.RepositoryPath}\src\bin\roslyn] to {deployConfig.StagingPath}\bin\roslyn]");
+                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\roslyn", $@"{deployConfig.StagingPath}\bin\roslyn");
+
+                Console.WriteLine($@"Copying service files [{deployConfig.RepositoryPath}\src] to {deployConfig.StagingPath}]");
+                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src", $@"{deployConfig.StagingPath}");
+
+                //deployConfig.StagingPath = $@"{deployConfig.RepositoryPath}";
             }
 
             DeployService(deployConfig.StagingPath, deployConfig.DeployPath);
@@ -131,6 +148,8 @@ namespace TingenLieutenant.WebServiceDeployer
         {
             Console.WriteLine($"Verifying the repository path [{repositoryPath}]");
 
+            var t = DevelopmentDeploy.GetRepositoryPathStatus(repositoryPath);
+
             switch (DevelopmentDeploy.GetRepositoryPathStatus(repositoryPath))
             {
                 case "null-or-empty":
@@ -143,21 +162,23 @@ namespace TingenLieutenant.WebServiceDeployer
                     Environment.Exit(1);
                     break;
 
+                case "valid-url":
+                    Console.WriteLine("Repository path seems valid, but please verify");
+                    break;
+
                 case "does-not-exist":
                     Console.WriteLine($"ERROR: Repository path does not exist");
                     Environment.Exit(1);
                     break;
 
-                case "valid-path":
+                case "exists":
                     Console.WriteLine("Repository path is valid");
                     break;
 
-                case "valid-url":
-                    Console.WriteLine("Repository path seems valid, but please verify");
-                    break;
+
 
                 default:
-                    Console.WriteLine("ERROR: Unknown error occurred while verifying repository path");
+                    Console.WriteLine($"ERROR: Unknown error occurred while verifying repository path");
                     Environment.Exit(1);
                     break;
             }
@@ -256,30 +277,30 @@ namespace TingenLieutenant.WebServiceDeployer
         {
             Console.WriteLine($"1: {stagingPath} - {deploymentpath}");
 
-            if (!Directory.Exists($@"{deploymentpath}\bin"))
-            {
-                Console.WriteLine($"Creating directory [{stagingPath} - {deploymentpath}.");
-                Directory.CreateDirectory($@"{deploymentpath}\bin");
-            }
+            //if (!Directory.Exists($@"{deploymentpath}\bin"))
+            //{
+            //    Console.WriteLine($"Creating directory [{stagingPath} - {deploymentpath}.");
+            //    Directory.CreateDirectory($@"{deploymentpath}\bin");
+            //}
 
             Console.WriteLine($"2: {stagingPath} - {deploymentpath}");
 
             Console.WriteLine($@"Deploying web service from [{stagingPath}] to [{deploymentpath}]");
 
-            Console.WriteLine($@"Copying [{stagingPath}\src\bin] to [{deploymentpath}\bin]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\src\bin\", $@"{deploymentpath}\bin\");
+            Console.WriteLine($@"Copying [{stagingPath}\bin] to [{deploymentpath}\bin]");
+            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\", $@"{deploymentpath}\bin\");
 
-            Console.WriteLine($@"Copying [$@""{stagingPath}\src\bin\AppData] to [$@""{deploymentpath}\bin\AppData]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\src\bin\AppData", $@"{deploymentpath}\bin\AppData");
+            Console.WriteLine($@"Copying [$@""{stagingPath}\bin\AppData] to [$@""{deploymentpath}\bin\AppData]");
+            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\AppData", $@"{deploymentpath}\bin\AppData");
 
-            Console.WriteLine($@"Copying [$@""{stagingPath}\src\bin\AppData\Runtime] to [$@""{deploymentpath}\bin\AppData\Runtime]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\src\bin\AppData\Runtime", $@"{deploymentpath}\bin\AppData\Runtime");
+            Console.WriteLine($@"Copying [$@""{stagingPath}\bin\AppData\Runtime] to [$@""{deploymentpath}\bin\AppData\Runtime]");
+            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\AppData\Runtime", $@"{deploymentpath}\bin\AppData\Runtime");
 
-            Console.WriteLine($@"Copying [{stagingPath}\src\bin\roslyn] to {deploymentpath}\bin\roslyn]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\src\bin\roslyn", $@"{deploymentpath}\bin\roslyn");
+            Console.WriteLine($@"Copying [{stagingPath}\bin\roslyn] to {deploymentpath}\bin\roslyn]");
+            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\roslyn", $@"{deploymentpath}\bin\roslyn");
 
-            Console.WriteLine($@"Copying service files [{stagingPath}\src] to {deploymentpath}]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\src", $@"{deploymentpath}");
+            Console.WriteLine($@"Copying service files [{stagingPath} to {deploymentpath}]");
+            DevelopmentDeploy.CopyDirectory($@"{stagingPath}", $@"{deploymentpath}");
         }
     }
 }
