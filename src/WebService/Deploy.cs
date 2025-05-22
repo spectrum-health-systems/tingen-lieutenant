@@ -8,8 +8,8 @@
  *                                          TingenLieutenant.WebService.Deploy.cs
  */
 
-// u250521_code
-// u250521_documentation
+// u250522_code
+// u250522_documentation
 
 using System.IO.Compression;
 using System.Net;
@@ -30,7 +30,7 @@ namespace TingenLieutenant.WebService
     ///         </list>
     ///     </para>
     /// </remarks>
-    internal class DevelopmentDeploy
+    internal class Deploy
     {
         /// <summary>The location of the Tingen Web Service that will be deployed.</summary>
         /// <remarks>
@@ -68,10 +68,10 @@ namespace TingenLieutenant.WebService
         /// <summary>The location where the Tingen Web Service is deployed.</summary>
         /// <remarks>
         ///     <para>
-        ///     The TargetRoot is the location where the repository will be deployed.<br/>
+        ///     The DeployPath is the location where the repository will be deployed.<br/>
         ///     </para>
         ///     <para>
-        ///         The TargetRoot:<br/>
+        ///         The DeployPath:<br/>
         ///         <list type="bullet">
         ///             <item>Can be a local directory</item>
         ///             <item>Can be a network share/mapped drive</item>
@@ -80,6 +80,11 @@ namespace TingenLieutenant.WebService
         /// </remarks>
         /// <value>The default value is "<c>C:\Tingen\UAT</c>"</value>
         public string DeployPath { get; set; }
+
+        public static void VerifyFramework()
+        {
+            Directory.CreateDirectory("./AppData/");
+        }
 
         /// <summary>Determines the status of the configuration file.</summary>
         /// <remarks>
@@ -96,7 +101,7 @@ namespace TingenLieutenant.WebService
         ///         <item>exists: The config file does exist at the <paramref name="configPath"/></item>
         ///     </list>
         /// </returns>
-        public static string GetConfigFileStatus(string configPath)
+        public static string ConfigFileStatus(string configPath)
         {
             return string.IsNullOrEmpty(configPath)
                 ? "null-or-empty"
@@ -106,11 +111,14 @@ namespace TingenLieutenant.WebService
         }
 
         /// <summary>Writes a default configuration file.</summary>
-        public static void CreateDeploymentConfigFile(string configPath)
+        public static void CreateDefaultConfigFile(string configPath)
         {
-            DevelopmentDeploy deployConfig = BuildDefaultConfig();
+            var deployJson = JsonSerializer.Serialize(BuildDefaultConfig(), new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
 
-            WriteDeploymentConfig(configPath, deployConfig);
+            File.WriteAllText(configPath, deployJson);
         }
 
         /// <summary>Determines the status of the <see cref="RepositoryPath"/>.</summary>
@@ -132,7 +140,7 @@ namespace TingenLieutenant.WebService
         ///         <item>exists: The <paramref name="repositoryPath"/> is a local/shared drive, and does exist</item>
         ///     </list>
         /// </returns>
-        public static string GetRepositoryPathStatus(string repositoryPath)
+        public static string RepositoryPathStatus(string repositoryPath)
         {
             return string.IsNullOrEmpty(repositoryPath)
                 ? "null-or-empty"
@@ -160,7 +168,7 @@ namespace TingenLieutenant.WebService
         ///         <item>exists: The <paramref name="stagingPath"/> does exist</item>
         ///     </list>
         /// </returns>
-        public static string GetStagingPathStatus(string stagingPath)
+        public static string StagingPathStatus(string stagingPath)
         {
             return string.IsNullOrEmpty(stagingPath)
                 ? "null-or-empty"
@@ -175,16 +183,16 @@ namespace TingenLieutenant.WebService
         ///         If the <paramref name="deployPath"/> is invalid, the deployment process will not proceed.
         ///     </para>
         /// </remarks>
-        /// <param name="deployPath">The staging path.</param>
+        /// <param name="deployPath">The deployment path.</param>
         /// <returns>
-        ///     The status of the staging path:
+        ///     The status of the deployment path:
         ///     <list type="bullet">
         ///         <item>null-or-empty: The passed <paramref name="deployPath"/> is null/empty</item>
         ///         <item>does-not-exist: The <paramref name="deployPath"/> does not exist</item>
         ///         <item>exists: The <paramref name="deployPath"/> does exist</item>
         ///     </list>
         /// </returns>
-        public static string GetDeploymentRootStatus(string deployPath)
+        public static string DeployPathStatus(string deployPath)
         {
             return string.IsNullOrEmpty(deployPath)
                 ? "null-or-empty"
@@ -193,16 +201,16 @@ namespace TingenLieutenant.WebService
                     : "exists";
         }
 
-        /// <summary>Creates a default <see cref="DevelopmentDeploy"/> instance with preconfigured paths and repository settings.</summary>
+        /// <summary>Creates a default <see cref="Deploy"/> instance with preconfigured paths and repository settings.</summary>
         /// <remarks>
         ///     <para>
         ///         These are the default configuration values for a standard implementation of the Tingen Web Service.<br/>
         ///     </para>
         /// </remarks>
-        /// <returns>A <see cref="DevelopmentDeploy"/> object initialized with default values for the repository path.</returns>
-        public static DevelopmentDeploy BuildDefaultConfig()
+        /// <returns>A <see cref="Deploy"/> object initialized with default values for the repository path.</returns>
+        public static Deploy BuildDefaultConfig()
         {
-            return new DevelopmentDeploy
+            return new Deploy
             {
                 RepositoryPath = "https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip",
                 StagingPath    = @"C:\Tingen_Data\WebService\staging",
@@ -210,69 +218,52 @@ namespace TingenLieutenant.WebService
             };
         }
 
-        /// <summary>Writes the deployment configuration for development to a file.</summary>
-        /// <param name="configPath">Path to the configuration file.</param>
-        /// <param name="deployConfig">The deployment configuration object to serialize and write to the file.</param>
-        public static void WriteDeploymentConfig(string configPath, DevelopmentDeploy deployConfig)
-        {
-            var deployJson = JsonSerializer.Serialize(deployConfig, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            File.WriteAllText(configPath, deployJson);
-        }
-
         /// <summary>Loads the configuration file.</summary>
         /// <param name="configPath">The path to the configuration file.</param>
-        /// <returns>An instance of <see cref="DevelopmentDeploy"/> representing the deserialized configuration.</returns>
-        public static DevelopmentDeploy LoadConfigFile(string configPath)
+        /// <returns>An instance of <see cref="Deploy"/> representing the deserialized configuration.</returns>
+        public static Deploy LoadConfigFile(string configPath)
         {
             var deployConfig = File.ReadAllText(configPath);
             
-            return JsonSerializer.Deserialize<DevelopmentDeploy>(deployConfig);
+            return JsonSerializer.Deserialize<Deploy>(deployConfig);
         }
 
         /// <summary>Cleans and recreates the staging directory.</summary>
-        /// <param name="stagingRoot">The root directory of the development deployment.</param>
-        public static void CleanStagingRoot(string stagingRoot)
+        /// <param name="stagingPath">The root directory of the development deployment.</param>
+        public static void CleanStagingPath(string stagingPath)
         {
-            if (Directory.Exists($@"{stagingRoot}"))
+            if (Directory.Exists($@"{stagingPath}"))
             {
-                Directory.Delete($@"{stagingRoot}", true);
+                Directory.Delete($@"{stagingPath}", true);
             }
 
-            Directory.CreateDirectory($@"{stagingRoot}");
-            Directory.CreateDirectory($@"{stagingRoot}\bin");
-            Directory.CreateDirectory($@"{stagingRoot}\bin\roslyn");
-            Directory.CreateDirectory($@"{stagingRoot}\bin\AppData");
-            Directory.CreateDirectory($@"{stagingRoot}\bin\AppData\Runtime");
+            Directory.CreateDirectory($@"{stagingPath}");
         }
 
         /// <summary>Cleans and prepares the specified target.</summary>
-        /// <param name="deployRoot">The root directory to clean and initialize. Must be a valid directory path.</param>
-        public static void CleanDeploymentRoot(string deployRoot)
+        /// <param name="deployPath">The root directory to clean and initialize. Must be a valid directory path.</param>
+        public static void CleanDeployPath(string deployPath)
         {
-            if (Directory.Exists($@"{deployRoot}"))
+            if (Directory.Exists($@"{deployPath}"))
             {
-                Directory.Delete($@"{deployRoot}", true);
+                Directory.Delete($@"{deployPath}", true);
             }
 
-            Directory.CreateDirectory($@"{deployRoot}");
-            Directory.CreateDirectory($@"{deployRoot}\bin");
-            Directory.CreateDirectory($@"{deployRoot}\bin\roslyn");
-            Directory.CreateDirectory($@"{deployRoot}\bin\AppData");
-            Directory.CreateDirectory($@"{deployRoot}\bin\AppData\Runtime");
+            Directory.CreateDirectory($@"{deployPath}");
+            Directory.CreateDirectory($@"{deployPath}\bin");
+            Directory.CreateDirectory($@"{deployPath}\bin\roslyn");
+            Directory.CreateDirectory($@"{deployPath}\bin\AppData");
+            Directory.CreateDirectory($@"{deployPath}\bin\AppData\Runtime");
         }
 
         /// <summary>Downloads and extracts a remote repository.</summary>
-        /// <param name="repoPath">The URL of the remote repository archive to download.</param>
-        /// <param name="stagingRoot">The root directory where the repository archive will be staged.</param>
-        public static void GetRemoteRepository(string repoPath, string stagingRoot)
+        /// <param name="repositoryPath">The URL of the remote repository archive to download.</param>
+        /// <param name="stagingPath">The root directory where the repository archive will be staged.</param>
+        public static void GetRemoteRepository(string repositoryPath, string stagingPath)
         {
             var client = new WebClient();
-            client.DownloadFile(repoPath, $@"{stagingRoot}\tingen-web-service.zip");
-            ZipFile.ExtractToDirectory($@"{stagingRoot}\tingen-web-service.zip", $@"{stagingRoot}\");
+            client.DownloadFile(repositoryPath, $@"{stagingPath}\tingen-web-service.zip");
+            ZipFile.ExtractToDirectory($@"{stagingPath}\tingen-web-service.zip", $@"{stagingPath}\");
         }
 
         /// <summary>Copies all files and subdirectories from the specified source directory to the target directory.</summary>
@@ -286,30 +277,6 @@ namespace TingenLieutenant.WebService
             {
                 file.CopyTo(Path.Combine(targetPath, file.Name), true);
             }
-        }
-
-        public static void CopyServiceFiles(string stagingPath, string deploypath)
-        {
-            foreach (string serviceFile in DevelopmentDeploy.ListOfServiceFiles())
-            {
-                Console.WriteLine($@"Copying service file [{serviceFile}]");
-                File.Copy($@"{stagingPath}\src\{serviceFile}", $@"{deploypath}\{serviceFile}");
-            }
-        }
-
-        /// <summary>Retrieves a list of service-related file names.</summary>
-        /// <returns>A list of strings representing the names of service-related files.</returns>
-        public static List<string> ListOfServiceFiles()
-        {
-            return
-            [
-                "TingenWebService.asmx",
-                "TingenWebService.asmx.cs",
-                "packages.config",
-                "Web.config",
-                "Web.Debug.config",
-                "Web.Release.config"
-            ];
         }
     }
 }

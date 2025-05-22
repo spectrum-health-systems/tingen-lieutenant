@@ -8,12 +8,12 @@
  *                                    TingenLieutenant.WebService.ViaDevDeploy.cs
  */
 
-// u250521_code
-// u250521_documentation
+// u250522_code
+// u250522_documentation
 
 using TingenLieutenant.WebService;
 
-namespace TingenLieutenant.WebServiceDeployer
+namespace TingenLieutenant.WebService
 {
     /// <summary>Deploys the Tingen Web Service via Tingen-DevDeploy.</summary>
     /// <remarks>
@@ -26,48 +26,31 @@ namespace TingenLieutenant.WebServiceDeployer
     {
         /// <summary>Deploys the Tingen Web Service.</summary>
         /// <param name="configPath">The configuration file path.</param>
-        public static void DeployEnvironment(string configPath)
+        public static void DeployWebService(string configPath)
         {
+            Deploy.VerifyFramework();
             StartDeployment();
             VerifyConfigFileStatus(configPath);
 
             var deployConfig = LoadConfigFile(configPath);
 
             VerifyRepoPathStatus(deployConfig.RepositoryPath);
-            VerifyStagingRoot(deployConfig.StagingPath);
-            VerifyDeploymentRoot(deployConfig.DeployPath);
 
-            PrepStaging(deployConfig.StagingPath);
-            PrepTarget(deployConfig.DeployPath);
-
-            bool repoIsRemote = deployConfig.RepositoryPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
-
-            if (repoIsRemote)
+            if (deployConfig.RepositoryPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
+                VerifyStagingRoot(deployConfig.StagingPath);
+                PrepStaging(deployConfig.StagingPath);
                 GetRemoteRepostitory(deployConfig.RepositoryPath, deployConfig.StagingPath);
                 deployConfig.StagingPath = $@"{deployConfig.StagingPath}\tingen-web-service-development\src";
             }
             else
             {
-                Console.WriteLine($@"Deploying web service from [{deployConfig.RepositoryPath}] to [{deployConfig.StagingPath}]");
-
-                Console.WriteLine($@"Copying [{deployConfig.RepositoryPath}\src\bin] to [{deployConfig.StagingPath}\bin]");
-                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\", $@"{deployConfig.StagingPath}\bin\");
-
-                Console.WriteLine($@"Copying [$@""{deployConfig.RepositoryPath}\src\bin\AppData] to [$@""{deployConfig.StagingPath}\bin\AppData]");
-                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\AppData", $@"{deployConfig.StagingPath}\bin\AppData");
-
-                Console.WriteLine($@"Copying [$@""{deployConfig.RepositoryPath}\src\bin\AppData\Runtime] to [$@""{deployConfig.StagingPath}\bin\AppData\Runtime]");
-                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\AppData\Runtime", $@"{deployConfig.StagingPath}\bin\AppData\Runtime");
-
-                Console.WriteLine($@"Copying [{deployConfig.RepositoryPath}\src\bin\roslyn] to {deployConfig.StagingPath}\bin\roslyn]");
-                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src\bin\roslyn", $@"{deployConfig.StagingPath}\bin\roslyn");
-
-                Console.WriteLine($@"Copying service files [{deployConfig.RepositoryPath}\src] to {deployConfig.StagingPath}]");
-                DevelopmentDeploy.CopyDirectory($@"{deployConfig.RepositoryPath}\src", $@"{deployConfig.StagingPath}");
-
-                //deployConfig.StagingPath = $@"{deployConfig.RepositoryPath}";
+                deployConfig.StagingPath = $@"{deployConfig.RepositoryPath}\src";
+                VerifyStagingRoot(deployConfig.StagingPath);
             }
+
+            VerifyDeploymentPath(deployConfig.DeployPath);
+            PrepTarget(deployConfig.DeployPath);
 
             DeployService(deployConfig.StagingPath, deployConfig.DeployPath);
         }
@@ -75,11 +58,9 @@ namespace TingenLieutenant.WebServiceDeployer
         /// <summary>Start the deployment process.</summary>
         private static void StartDeployment()
         {
-            var msgStartDevDeploy = $"====================={Environment.NewLine}" +
-                                    $"Tingen DevDeploy v2.0{Environment.NewLine}" +
-                                    $"=====================";
-
-            Console.WriteLine(msgStartDevDeploy);
+            Console.WriteLine($"====================={Environment.NewLine}" +
+                              $"Tingen DevDeploy v2.0{Environment.NewLine}" +
+                              $"====================={Environment.NewLine}");
         }
 
         /// <summary>Verifies the status of the configuration file.</summary>
@@ -93,27 +74,28 @@ namespace TingenLieutenant.WebServiceDeployer
         /// <param name="configPath">The configuration file path.</param>
         private static void VerifyConfigFileStatus(string configPath)
         {
-            Console.WriteLine($"Verifying configuration file [{configPath}]");
+            Console.WriteLine($"[ CONFIGURATION ]{Environment.NewLine}" +
+                              $"  Path: \"{configPath}\"");
 
-            switch (DevelopmentDeploy.GetConfigFileStatus(configPath))
+            switch (Deploy.ConfigFileStatus(configPath))
             {
                 case "null-or-empty":
-                    Console.WriteLine("ERROR: %configPath% cannot be null or empty");
+                    Console.WriteLine("Status: (Error) %configPath% is null or empty");
                     Environment.Exit(1);
                     break;
 
                 case "does-not-exist":
-                    Console.WriteLine("Configuration file not found.\n  Creating default configuration file");
-                    DevelopmentDeploy.CreateDeploymentConfigFile(configPath);
+                    Console.WriteLine("Status: Not found, creating default configuration.");
+                    Deploy.CreateDefaultConfigFile(configPath);
                     Environment.Exit(1);
                     break;
 
                 case "exists":
-                    Console.WriteLine("Configuration file found");
+                    Console.WriteLine("Status: Valid");
                     break;
 
                 default:
-                    Console.WriteLine("ERROR: Unknown error occurred while verifying configuration file");
+                    Console.WriteLine("Status: (Error) An unknown error occurred");
                     Environment.Exit(1);
                     break;
             }
@@ -122,11 +104,11 @@ namespace TingenLieutenant.WebServiceDeployer
         /// <summary>Load the configuration.</summary>
         /// <param name="configPath">The configuration file path.</param>
         /// <returns>The configuration settings.</returns>
-        private static DevelopmentDeploy LoadConfigFile(string configPath)
+        private static Deploy LoadConfigFile(string configPath)
         {
-            Console.WriteLine("Loading config file");
+            Console.WriteLine("Status: Loading");
 
-            return DevelopmentDeploy.LoadConfigFile(configPath);
+            return Deploy.LoadConfigFile(configPath);
         }
 
         /// <summary>Verifies the status of the repository path.</summary>
@@ -146,97 +128,68 @@ namespace TingenLieutenant.WebServiceDeployer
         /// <param name="repositoryPath">The path or URL of the repository location to verify.</param>
         private static void VerifyRepoPathStatus(string repositoryPath)
         {
-            Console.WriteLine($"Verifying the repository path [{repositoryPath}]");
+            Console.WriteLine(Environment.NewLine +
+                              $"[ REPOSITORY ]{Environment.NewLine}" +
+                              $"  Path: \"{repositoryPath}\"");
 
-            var t = DevelopmentDeploy.GetRepositoryPathStatus(repositoryPath);
-
-            switch (DevelopmentDeploy.GetRepositoryPathStatus(repositoryPath))
+            switch (Deploy.RepositoryPathStatus(repositoryPath))
             {
                 case "null-or-empty":
-                    Console.WriteLine("ERROR: repositoryPath cannot be null or empty");
+                    Console.WriteLine("Status: (Error) %repositoryPath% is null or empty");
                     Environment.Exit(1);
                     break;
 
                 case "invalid-url":
-                    Console.WriteLine("ERROR: Repository path is not a valid URL");
+                    Console.WriteLine($"Status: (Error) \"{repositoryPath}\" is not a valid URL");
                     Environment.Exit(1);
                     break;
 
                 case "valid-url":
-                    Console.WriteLine("Repository path seems valid, but please verify");
+                    Console.WriteLine("Status: Repository path seems valid, but please verify");
                     break;
 
                 case "does-not-exist":
-                    Console.WriteLine($"ERROR: Repository path does not exist");
+                    Console.WriteLine($"Status: (Error) \"{repositoryPath}\" does not exist");
                     Environment.Exit(1);
                     break;
 
                 case "exists":
-                    Console.WriteLine("Repository path is valid");
+                    Console.WriteLine("Status: Valid");
                     break;
 
-
-
                 default:
-                    Console.WriteLine($"ERROR: Unknown error occurred while verifying repository path");
+                    Console.WriteLine("Status: (Error) An unknown error occurred");
                     Environment.Exit(1);
                     break;
             }
         }
 
-        /// <summary>Verifies the status of the DevDeploy root.</summary>
-        /// <param name="stagingRoot">The path to the DevDeploy root.</param>
-        private static void VerifyStagingRoot(string stagingRoot)
+        /// <summary>Verifies the status of the staging path.</summary>
+        /// <param name="stagingPath">The staging path.</param>
+        private static void VerifyStagingRoot(string stagingPath)
         {
-            Console.WriteLine($"Verifying the staging path [{stagingRoot}]");
+            Console.WriteLine(Environment.NewLine +
+                              $"[ STAGING ]{Environment.NewLine}" +
+                              $"  Path: \"{stagingPath}\"");
 
-            switch (DevelopmentDeploy.GetStagingPathStatus(stagingRoot))
+            switch (Deploy.StagingPathStatus(stagingPath))
             {
                 case "null-or-empty":
-                    Console.WriteLine("ERROR: stagingPath configuration value cannot be null or empty");
+                    Console.WriteLine("Status: (Error) %stagingPath% is null or empty");
                     Environment.Exit(1);
                     break;
 
                 case "does-not-exist":
-                    Console.WriteLine($"ERROR: Staging path \"{stagingRoot}\" does not exist");
+                    Console.WriteLine($"Status: (Error) \"{stagingPath}\" does not exist");
                     Environment.Exit(1);
                     break;
 
                 case "exists":
-                    Console.WriteLine("Staging path is valid");
+                    Console.WriteLine("Status: Valid");
                     break;
 
                 default:
-                    Console.WriteLine("ERROR: Unknown error occurred while verifying staging path");
-                    Environment.Exit(1);
-                    break;
-            }
-        }
-
-        /// <summary>Verifies the status of the target root.</summary>
-        /// <param name="deploymentRoot">The path to the target root.</param>
-        private static void VerifyDeploymentRoot(string deploymentRoot)
-        {
-            Console.WriteLine($"Verifying the deployment path [{deploymentRoot}]");
-
-            switch (DevelopmentDeploy.GetDeploymentRootStatus(deploymentRoot))
-            {
-                case "null-or-empty":
-                    Console.WriteLine("ERROR: deploymentPath configuration value cannot be null or empty");
-                    Environment.Exit(1);
-                    break;
-
-                case "does-not-exist":
-                    Console.WriteLine($"ERROR: Deployment path \"{deploymentRoot}\" does not exist");
-                    Environment.Exit(1);
-                    break;
-
-                case "exists":
-                    Console.WriteLine("Deployment path is valid");
-                    break;
-
-                default:
-                    Console.WriteLine("ERROR: Unknown error occurred while verifying deployment path");
+                    Console.WriteLine("Status: (Error) An unknown error occurred");
                     Environment.Exit(1);
                     break;
             }
@@ -246,61 +199,106 @@ namespace TingenLieutenant.WebServiceDeployer
         /// <param name="stagingPath">The root directory where the staging area will be created.</param>
         private static void PrepStaging(string stagingPath)
         {
-            Console.WriteLine($"Preparing staging path [{stagingPath}]");
-            DevelopmentDeploy.CleanStagingRoot(stagingPath);
+            Console.WriteLine("Status: Preparing");
+            Deploy.CleanStagingPath(stagingPath);
+        }
+
+        /// <summary>Verifies the status of the target root.</summary>
+        /// <param name="deployPath">The path to the target root.</param>
+        private static void VerifyDeploymentPath(string deployPath)
+        {
+            Console.WriteLine(Environment.NewLine +
+                              $"[ Deployment ]{Environment.NewLine}" +
+                              $"  Path: \"{deployPath}\"");
+
+            switch (Deploy.DeployPathStatus(deployPath))
+            {
+                case "null-or-empty":
+                    Console.WriteLine("Status: (Error) %deploymentPath% is null or empty");
+                    Environment.Exit(1);
+                    break;
+
+                case "does-not-exist":
+                    Console.WriteLine($"Status: (Error) \"{deployPath}\" does not exist");
+                    Environment.Exit(1);
+                    break;
+
+                case "exists":
+                    Console.WriteLine("Status: Valid");
+                    break;
+
+                default:
+                    Console.WriteLine("Status: (Error) An unknown error occurred");
+                    Environment.Exit(1);
+                    break;
+            }
         }
 
         /// <summary>Prepares the specified target directory for deployment.</summary>
-        /// <param name="deploymentPath">The root directory to prepare.</param>
-        private static void PrepTarget(string deploymentPath)
+        /// <param name="deployPath">The root directory to prepare.</param>
+        private static void PrepTarget(string deployPath)
         {
-            Console.WriteLine($"Preparing deployment path [{deploymentPath}]");
-            DevelopmentDeploy.CleanDeploymentRoot(deploymentPath);
+            var msgPrepDeployment = "Status: Preparing";
+
+            Console.WriteLine(msgPrepDeployment);
+            Deploy.CleanDeployPath(deployPath);
         }
 
         /// <summary>Get a remote repository.</summary>
-        /// <param name="repoPath">The path to the remote repository.</param>
-        /// <param name="stagingRoot">The root directory where the repository will be extracted.</param>
-        private static void GetRemoteRepostitory(string repoPath, string stagingRoot)
+        /// <param name="repositoryPath">The path to the remote repository.</param>
+        /// <param name="stagingPath">The root directory where the repository will be extracted.</param>
+        private static void GetRemoteRepostitory(string repositoryPath, string stagingPath)
         {
-            if (repoPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            if (repositoryPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"Downloading and extracting remote repository");
-                DevelopmentDeploy.GetRemoteRepository(repoPath, stagingRoot);
+                Console.WriteLine("Status: Downloading and extracting remote repository...please wait...");
+                Deploy.GetRemoteRepository(repositoryPath, stagingPath);
             }
         }
 
         /// <summary>Deploys the service.</summary>
         /// <param name="stagingPath">The root directory of the development deployment.</param>
-        /// <param name="deploymentpath">The root directory of the target deployment.</param>
-        private static void DeployService(string stagingPath, string deploymentpath, bool isRemote = true)
+        /// <param name="deployPath">The root directory of the target deployment.</param>
+        private static void DeployService(string stagingPath, string deployPath)
         {
-            Console.WriteLine($"1: {stagingPath} - {deploymentpath}");
+            // TODO - This should be cleaned up.
 
-            //if (!Directory.Exists($@"{deploymentpath}\bin"))
-            //{
-            //    Console.WriteLine($"Creating directory [{stagingPath} - {deploymentpath}.");
-            //    Directory.CreateDirectory($@"{deploymentpath}\bin");
-            //}
+            var msgDeployService = Environment.NewLine +
+                               $"[ Tingen Web Service ]{Environment.NewLine}" +
+                               $"Status: Deploying";
 
-            Console.WriteLine($"2: {stagingPath} - {deploymentpath}");
+            Console.WriteLine(msgDeployService);
 
-            Console.WriteLine($@"Deploying web service from [{stagingPath}] to [{deploymentpath}]");
+            var msgDeployBinPath = $"  From: \"{stagingPath}\\bin\"{Environment.NewLine}" +
+                                   $"    To: \"{deployPath}\\bin\"";
 
-            Console.WriteLine($@"Copying [{stagingPath}\bin] to [{deploymentpath}\bin]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\", $@"{deploymentpath}\bin\");
+            Console.WriteLine(msgDeployBinPath);
+            Deploy.CopyDirectory($@"{stagingPath}\bin\", $@"{deployPath}\bin\");
 
-            Console.WriteLine($@"Copying [$@""{stagingPath}\bin\AppData] to [$@""{deploymentpath}\bin\AppData]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\AppData", $@"{deploymentpath}\bin\AppData");
+            var msgDeployAppDataPath = Environment.NewLine +
+                                   $"  From: \"{stagingPath}\\bin\\AppData\"{Environment.NewLine}" +
+                                   $"    To: \"{deployPath}\\bin\\AppData\"";
+            Console.WriteLine(msgDeployAppDataPath);
+            Deploy.CopyDirectory($@"{stagingPath}\bin\AppData", $@"{deployPath}\bin\AppData");
 
-            Console.WriteLine($@"Copying [$@""{stagingPath}\bin\AppData\Runtime] to [$@""{deploymentpath}\bin\AppData\Runtime]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\AppData\Runtime", $@"{deploymentpath}\bin\AppData\Runtime");
+            var msgDeployAppDataRuntimePath = Environment.NewLine +
+                                   $"  From: \"{stagingPath}\\bin\\AppData\\Runtime\"{Environment.NewLine}" +
+                                   $"    To: \"{deployPath}\\bin\\AppData\\Runtime\"";
 
-            Console.WriteLine($@"Copying [{stagingPath}\bin\roslyn] to {deploymentpath}\bin\roslyn]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}\bin\roslyn", $@"{deploymentpath}\bin\roslyn");
+            Console.WriteLine(msgDeployAppDataRuntimePath);
+            Deploy.CopyDirectory($@"{stagingPath}\bin\AppData\Runtime", $@"{deployPath}\bin\AppData\Runtime");
 
-            Console.WriteLine($@"Copying service files [{stagingPath} to {deploymentpath}]");
-            DevelopmentDeploy.CopyDirectory($@"{stagingPath}", $@"{deploymentpath}");
+            var msgDeployRoslynPath = Environment.NewLine +
+                                   $"  From: \"{stagingPath}\\bin\\roslyn\"{Environment.NewLine}" +
+                                   $"    To: \"{deployPath}\\bin\\roslyn\"";
+            Console.WriteLine(msgDeployRoslynPath);
+            Deploy.CopyDirectory($@"{stagingPath}\bin\roslyn", $@"{deployPath}\bin\roslyn");
+
+            var msgDeployServiceFilesPath = Environment.NewLine +
+                                   $"  From: \"{stagingPath}{Environment.NewLine}" +
+                                   $"    To: \"{deployPath}";
+            Console.WriteLine(msgDeployServiceFilesPath);
+            Deploy.CopyDirectory($@"{stagingPath}", $@"{deployPath}");
         }
     }
 }

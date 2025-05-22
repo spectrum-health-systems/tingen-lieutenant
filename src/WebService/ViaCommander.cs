@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TingenLieutenant.WebServiceDeployer
+namespace TingenLieutenant.WebService
 {
     internal class ViaCommander
     {

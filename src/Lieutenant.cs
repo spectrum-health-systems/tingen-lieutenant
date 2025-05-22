@@ -12,9 +12,9 @@
  * ███████╗██║███████╗╚██████╔╝   ██║   ███████╗██║ ╚████║██║  ██║██║ ╚████║   ██║
  * ╚══════╝╚═╝╚══════╝ ╚═════╝    ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
  *                                             A class library for Tingen projects
- *                                                                   Release 2.0.0
+ *                                                               v2.0.0-rc1+250522
  *
- * https://github.com/APrettyCoolProgram/Tingen-Lieutenant
+ * https://github.com/spectrum-health-systems/tingen-lieutenant
  * Copyright (c) A Pretty Cool Program. All rights reserved.
  * Licensed under the Apache 2.0 license.
  */
