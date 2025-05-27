@@ -9,7 +9,7 @@
  */
 
 // u250522_code
-// u250522_documentation
+// u250527_documentation
 
 using System.IO.Compression;
 using System.Net;
@@ -35,7 +35,7 @@ namespace TingenLieutenant.WebService
         /// <summary>The location of the Tingen Web Service that will be deployed.</summary>
         /// <remarks>
         ///     <para>
-        ///         This isn't necessarily a "path", since be either a directory or a URL.<br/>
+        ///         This isn't necessarily a "path", since it can be either a directory or a URL.<br/>
         ///         <br/>
         ///         If the RepositoryPath is a URL:
         ///         <list type="bullet">
