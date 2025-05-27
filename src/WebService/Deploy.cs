@@ -8,12 +8,14 @@
  *                                          TingenLieutenant.WebService.Deploy.cs
  */
 
-// u250522_code
+// u250527_code
 // u250527_documentation
 
 using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
+
+using TingenLieutenant.Blueprint;
 
 namespace TingenLieutenant.WebService
 {
@@ -30,7 +32,7 @@ namespace TingenLieutenant.WebService
     ///         </list>
     ///     </para>
     /// </remarks>
-    internal class Deploy
+    public class Deploy
     {
         /// <summary>The location of the Tingen Web Service that will be deployed.</summary>
         /// <remarks>
@@ -50,7 +52,9 @@ namespace TingenLieutenant.WebService
         ///     </para>
         /// </remarks>
         /// <value>The default value is "<c>https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip</c>"</value>
-        public string RepositoryPath { get; set; }
+        public string Source { get; set; }
+
+        public string SourceType { get; set; }
 
         /// <summary>The location where the Tingen Web Service is staged for deployment.</summary>
         /// <remarks>
@@ -63,7 +67,7 @@ namespace TingenLieutenant.WebService
         ///     </para>
         /// </remarks>
         /// <value>The default value is "<c>C:\Tingen_Data\DevDeploy</c>"</value>
-        public string StagingPath { get; set; }
+        public string StagePath { get; set; }
 
         /// <summary>The location where the Tingen Web Service is deployed.</summary>
         /// <remarks>
@@ -81,9 +85,54 @@ namespace TingenLieutenant.WebService
         /// <value>The default value is "<c>C:\Tingen\UAT</c>"</value>
         public string DeployPath { get; set; }
 
-        public static void VerifyFramework()
+        public static void DeploymentProcess(string configPath, bool useCli)
         {
-            Directory.CreateDirectory("./AppData/");
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("start"), useCli);
+
+            VerifyFramework(useCli);
+
+            VerifyConfiguration(configPath, useCli);
+            Deploy deployConfig = LoadConfigFile(configPath, useCli);
+
+            VerifyStagePath(deployConfig.StagePath, useCli);
+            VerifyDeployPath(deployConfig.DeployPath, useCli);
+
+            RefreshStagePath(deployConfig.StagePath, useCli);
+            RefreshDeployPath(deployConfig.DeployPath, useCli);
+
+            deployConfig.SourceType = GetSourceType(deployConfig.Source, useCli);
+
+            if (deployConfig.SourceType == "url")
+            {
+                VerifySourceUrl(deployConfig.Source, useCli);
+                DownloadSourceUrl(deployConfig.Source, deployConfig.StagePath, useCli);
+                deployConfig.StagePath = $@"{deployConfig.StagePath}\tingen-web-service-development\src";
+            }
+            else
+            {
+                VerifySourcePath(deployConfig.Source, useCli);
+                deployConfig.StagePath = $@"{deployConfig.Source}\src";
+            }
+
+            DeployService(deployConfig.StagePath, deployConfig.DeployPath, useCli);
+
+
+
+        }
+
+        /// <summary>Ensures that the required framework directory structure exists.</summary>
+        public static void VerifyFramework(bool useCli)
+        {
+            Lieutenant.DisplayMessage(UserMessage.DeploymentFramework("verifying"), useCli);
+
+            if (!Directory.Exists("./AppData/"))
+            {
+                Lieutenant.DisplayMessage(UserMessage.DeploymentFramework("creating"), useCli);
+                Directory.CreateDirectory("./AppData/"); // Might need just this.
+                Lieutenant.DisplayMessage(UserMessage.DeploymentFramework("created"), useCli);
+            }
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentFramework("verified"), useCli);
         }
 
         /// <summary>Determines the status of the configuration file.</summary>
@@ -101,80 +150,204 @@ namespace TingenLieutenant.WebService
         ///         <item>exists: The config file does exist at the <paramref name="configPath"/></item>
         ///     </list>
         /// </returns>
-        public static string ConfigFileStatus(string configPath)
+        public static void VerifyConfiguration(string configPath, bool useCli)
         {
-            return string.IsNullOrEmpty(configPath)
-                ? "null-or-empty"
-                : (!File.Exists(configPath))
-                    ? "does-not-exist"
-                    : "exists";
+            Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("verifying"), useCli);
+
+            if (string.IsNullOrEmpty(configPath))
+            {
+                Lieutenant.DisplayMessage(UserMessage.DeploymentFramework("null-or-empty"), useCli);
+                Environment.Exit(1);
+            }
+            else if (File.Exists(configPath))
+            {
+                Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("found"), useCli);         
+            }
+            else
+            {
+                Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("creating"), useCli);
+                CreateDefaultConfigFile(configPath, useCli);
+                Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("created", configPath), useCli);
+                Environment.Exit(1);
+            }
         }
 
         /// <summary>Writes a default configuration file.</summary>
-        public static void CreateDefaultConfigFile(string configPath)
+        public static void CreateDefaultConfigFile(string configPath, bool useCli)
         {
-            var deployJson = JsonSerializer.Serialize(BuildDefaultConfig(), new JsonSerializerOptions
+            Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("building", configPath), useCli);
+            Deploy defaultConfig = BuildDefaultConfig(configPath, useCli);
+
+            var deployJson = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions
             {
                 WriteIndented = true
             });
 
+            Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("writing", configPath), useCli);
             File.WriteAllText(configPath, deployJson);
         }
 
-        /// <summary>Determines the status of the <see cref="RepositoryPath"/>.</summary>
+        /// <summary>Creates a default <see cref="Deploy"/> instance with preconfigured paths and repository settings.</summary>
         /// <remarks>
         ///     <para>
-        ///         The <paramref name="repositoryPath"/> can be a URL or a local directory path.<br/>
+        ///         These are the default configuration values for a standard implementation of the Tingen Web Service.<br/>
+        ///     </para>
+        /// </remarks>
+        /// <returns>A <see cref="Deploy"/> object initialized with default values for the repository path.</returns>
+        public static Deploy BuildDefaultConfig(string configPath, bool useCli)
+        {
+            Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("building"), useCli);
+
+            return new Deploy
+            {
+                Source = "https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip",
+                StagePath       = @"C:\Tingen_Data\WebService\staging",
+                DeployPath      = @"C:\Tingen\UAT"
+            };
+        }
+
+        public static Deploy LoadConfigFile(string configPath, bool useCli)
+        {
+            Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("loading"), useCli);
+            var deployConfig = File.ReadAllText(configPath);
+
+            return JsonSerializer.Deserialize<Deploy>(deployConfig);
+        }
+
+        public static string GetSourceType(string source, bool useCli)
+        {
+            if (source.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            {
+                Lieutenant.DisplayMessage(UserMessage.SourceType("Source is a URL..."), useCli);
+                return "url";
+            }
+            else
+            {
+                Lieutenant.DisplayMessage(UserMessage.SourceType("Source is a directory path..."), useCli);
+                return "path";
+            }
+        }
+
+        /// <summary>Determines the status of the <see cref="Source"/>.</summary>
+        /// <remarks>
+        ///     <para>
+        ///         The <paramref name="sourcePathOrUrl"/> can be a URL or a local directory path.<br/>
         ///         <br/>
         ///         If the RepostoryPath is invalid, the deployment process will not proceed.
         ///     </para>
         /// </remarks>
-        /// <param name="repositoryPath">The repository path.</param>
+        /// <param name="sourcePathOrUrl">The repository path.</param>
         /// <returns>
         ///     The status of the repository path:
         ///     <list type="bullet">
-        ///         <item>null-or-empty: The passed <paramref name="repositoryPath"/> is null/empty</item>
-        ///         <item>invalid-url: The <paramref name="repositoryPath"/> is a URL, and is not formatted correctly</item>
-        ///         <item>valid-url: The <paramref name="repositoryPath"/> is a URL, and is formatted correctly</item>   
-        ///         <item>does-not-exist: The <paramref name="repositoryPath"/> is a local/shared drive, and does not exist</item>
-        ///         <item>exists: The <paramref name="repositoryPath"/> is a local/shared drive, and does exist</item>
+        ///         <item>null-or-empty: The passed <paramref name="sourcePathOrUrl"/> is null/empty</item>
+        ///         <item>invalid-url: The <paramref name="sourcePathOrUrl"/> is a URL, and is not formatted correctly</item>
+        ///         <item>valid-url: The <paramref name="sourcePathOrUrl"/> is a URL, and is formatted correctly</item>   
+        ///         <item>does-not-exist: The <paramref name="sourcePathOrUrl"/> is a local/shared drive, and does not exist</item>
+        ///         <item>exists: The <paramref name="sourcePathOrUrl"/> is a local/shared drive, and does exist</item>
         ///     </list>
         /// </returns>
-        public static string RepositoryPathStatus(string repositoryPath)
+        public static void VerifySourceUrl(string sourceUrl, bool useCli)
         {
-            return string.IsNullOrEmpty(repositoryPath)
-                ? "null-or-empty"
-                : repositoryPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
-                    ? (!Uri.IsWellFormedUriString(repositoryPath, UriKind.Absolute))
-                        ? "invalid-url"
-                        : "valid-url"
-                    : (!Directory.Exists(repositoryPath))
-                        ? "does-not-exist"
-                        : "exists";
+            Lieutenant.DisplayMessage(UserMessage.SourceUrl("verifying"), useCli);
+
+            if (string.IsNullOrEmpty(sourceUrl))
+            {
+                Lieutenant.DisplayMessage(UserMessage.SourceUrl("null-or-empty"), useCli);
+                Environment.Exit(1);
+            }
+            else
+            {
+                if (Uri.IsWellFormedUriString(sourceUrl, UriKind.Absolute))
+                {
+                    Lieutenant.DisplayMessage(UserMessage.SourceUrl("review-url"), useCli);
+                }
+                else
+                {
+                    Lieutenant.DisplayMessage(UserMessage.SourceUrl("invalid-url"), useCli);
+                    Environment.Exit(1);
+                }
+            }
         }
 
-        /// <summary>Determines the status of the <see cref="StagingPath"/>.</summary>
+        /// <summary>Determines the status of the <see cref="Source"/>.</summary>
         /// <remarks>
         ///     <para>
-        ///         If the <paramref name="stagingPath"/> is invalid, the deployment process will not proceed.
+        ///         The <paramref name="sourcePathOrUrl"/> can be a URL or a local directory path.<br/>
+        ///         <br/>
+        ///         If the RepostoryPath is invalid, the deployment process will not proceed.
         ///     </para>
         /// </remarks>
-        /// <param name="stagingPath">The staging path.</param>
+        /// <param name="sourcePathOrUrl">The repository path.</param>
+        /// <returns>
+        ///     The status of the repository path:
+        ///     <list type="bullet">
+        ///         <item>null-or-empty: The passed <paramref name="sourcePathOrUrl"/> is null/empty</item>
+        ///         <item>invalid-url: The <paramref name="sourcePathOrUrl"/> is a URL, and is not formatted correctly</item>
+        ///         <item>valid-url: The <paramref name="sourcePathOrUrl"/> is a URL, and is formatted correctly</item>   
+        ///         <item>does-not-exist: The <paramref name="sourcePathOrUrl"/> is a local/shared drive, and does not exist</item>
+        ///         <item>exists: The <paramref name="sourcePathOrUrl"/> is a local/shared drive, and does exist</item>
+        ///     </list>
+        /// </returns>
+        public static void VerifySourcePath(string sourcePath, bool useCli)
+        {
+            Lieutenant.DisplayMessage(UserMessage.SourcePath("verifying"), useCli);
+
+            if (string.IsNullOrEmpty(sourcePath))
+            {
+                Lieutenant.DisplayMessage(UserMessage.SourcePath("null-or-empty"), useCli);
+                Environment.Exit(1);
+            }
+            else
+            {
+                if (Directory.Exists(sourcePath))
+                {
+                    Lieutenant.DisplayMessage(UserMessage.SourcePath("found"), useCli);
+                }
+                else
+                {
+                    Lieutenant.DisplayMessage(UserMessage.SourcePath("not-found"), useCli);
+                    Environment.Exit(1);
+                }
+            }
+        }
+
+
+        /// <summary>Determines the status of the <see cref="StagePath"/>.</summary>
+        /// <remarks>
+        ///     <para>
+        ///         If the <paramref name="stagePath"/> is invalid, the deployment process will not proceed.
+        ///     </para>
+        /// </remarks>
+        /// <param name="stagePath">The staging path.</param>
         /// <returns>
         ///     The status of the staging path:
         ///     <list type="bullet">
-        ///         <item>null-or-empty: The passed <paramref name="stagingPath"/> is null/empty</item>
-        ///         <item>does-not-exist: The <paramref name="stagingPath"/> does not exist</item>
-        ///         <item>exists: The <paramref name="stagingPath"/> does exist</item>
+        ///         <item>null-or-empty: The passed <paramref name="stagePath"/> is null/empty</item>
+        ///         <item>does-not-exist: The <paramref name="stagePath"/> does not exist</item>
+        ///         <item>exists: The <paramref name="stagePath"/> does exist</item>
         ///     </list>
         /// </returns>
-        public static string StagingPathStatus(string stagingPath)
+        public static void VerifyStagePath(string stagePath, bool useCli)
         {
-            return string.IsNullOrEmpty(stagingPath)
-                ? "null-or-empty"
-                : (!Directory.Exists(stagingPath))
-                    ? "does-not-exist"
-                    : "exists";
+            Lieutenant.DisplayMessage(UserMessage.StagePath("verifying"), useCli);
+
+            if (string.IsNullOrEmpty(stagePath))
+            {
+                Lieutenant.DisplayMessage(UserMessage.StagePath("null-or-empty"), useCli);
+                Environment.Exit(1);
+            }
+            else if (Directory.Exists(stagePath))
+            {
+
+                Lieutenant.DisplayMessage(UserMessage.StagePath("found"), useCli);
+
+            }
+            else
+            {
+                Lieutenant.DisplayMessage(UserMessage.StagePath("not-found"), useCli);
+                Environment.Exit(1);
+            }
         }
 
         /// <summary>Determines the status of the <see cref="DeployPath"/>.</summary>
@@ -192,78 +365,93 @@ namespace TingenLieutenant.WebService
         ///         <item>exists: The <paramref name="deployPath"/> does exist</item>
         ///     </list>
         /// </returns>
-        public static string DeployPathStatus(string deployPath)
+        public static void VerifyDeployPath(string deployPath, bool useCli)
         {
-            return string.IsNullOrEmpty(deployPath)
-                ? "null-or-empty"
-                : (!Directory.Exists(deployPath))
-                    ? "does-not-exist"
-                    : "exists";
-        }
+            Lieutenant.DisplayMessage(UserMessage.DeployPath("verifying"), useCli);
 
-        /// <summary>Creates a default <see cref="Deploy"/> instance with preconfigured paths and repository settings.</summary>
-        /// <remarks>
-        ///     <para>
-        ///         These are the default configuration values for a standard implementation of the Tingen Web Service.<br/>
-        ///     </para>
-        /// </remarks>
-        /// <returns>A <see cref="Deploy"/> object initialized with default values for the repository path.</returns>
-        public static Deploy BuildDefaultConfig()
-        {
-            return new Deploy
+            if (string.IsNullOrEmpty(deployPath))
             {
-                RepositoryPath = "https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip",
-                StagingPath    = @"C:\Tingen_Data\WebService\staging",
-                DeployPath     = @"C:\Tingen\UAT"
-            };
+                Lieutenant.DisplayMessage(UserMessage.DeployPath("null-or-empty"), useCli);
+                Environment.Exit(1);
+            }
+            else if (Directory.Exists(deployPath))
+            {
+
+                Lieutenant.DisplayMessage(UserMessage.DeployPath("found"), useCli);
+
+            }
+            else
+            {
+                Lieutenant.DisplayMessage(UserMessage.DeployPath("not-found"), useCli);
+                Environment.Exit(1);
+            }
         }
 
-        /// <summary>Loads the configuration file.</summary>
-        /// <param name="configPath">The path to the configuration file.</param>
-        /// <returns>An instance of <see cref="Deploy"/> representing the deserialized configuration.</returns>
-        public static Deploy LoadConfigFile(string configPath)
-        {
-            var deployConfig = File.ReadAllText(configPath);
-            
-            return JsonSerializer.Deserialize<Deploy>(deployConfig);
-        }
 
         /// <summary>Cleans and recreates the staging directory.</summary>
-        /// <param name="stagingPath">The root directory of the development deployment.</param>
-        public static void CleanStagingPath(string stagingPath)
+        /// <param name="stagePath">The root directory of the development deployment.</param>
+        public static void RefreshStagePath(string stagePath, bool useCli)
         {
-            if (Directory.Exists($@"{stagingPath}"))
-            {
-                Directory.Delete($@"{stagingPath}", true);
-            }
+            Lieutenant.DisplayMessage(UserMessage.StagePath("refresh"), useCli);
 
-            Directory.CreateDirectory($@"{stagingPath}");
+            Directory.Delete($@"{stagePath}", true);
+            Directory.CreateDirectory($@"{stagePath}");
+
+            Lieutenant.DisplayMessage(UserMessage.StagePath("refreshed"), useCli);
         }
 
         /// <summary>Cleans and prepares the specified target.</summary>
         /// <param name="deployPath">The root directory to clean and initialize. Must be a valid directory path.</param>
-        public static void CleanDeployPath(string deployPath)
+        public static void RefreshDeployPath(string deployPath, bool useCli)
         {
-            if (Directory.Exists($@"{deployPath}"))
-            {
-                Directory.Delete($@"{deployPath}", true);
-            }
+            Lieutenant.DisplayMessage(UserMessage.DeployPath("refresh"), useCli);
 
+            Directory.Delete($@"{deployPath}", true);
             Directory.CreateDirectory($@"{deployPath}");
             Directory.CreateDirectory($@"{deployPath}\bin");
             Directory.CreateDirectory($@"{deployPath}\bin\roslyn");
             Directory.CreateDirectory($@"{deployPath}\bin\AppData");
             Directory.CreateDirectory($@"{deployPath}\bin\AppData\Runtime");
+
+            Lieutenant.DisplayMessage(UserMessage.DeployPath("refresh"), useCli);
         }
 
         /// <summary>Downloads and extracts a remote repository.</summary>
         /// <param name="repositoryPath">The URL of the remote repository archive to download.</param>
         /// <param name="stagingPath">The root directory where the repository archive will be staged.</param>
-        public static void GetRemoteRepository(string repositoryPath, string stagingPath)
+        public static void DownloadSourceUrl(string sourceUrl, string stagePath, bool useCli)
         {
             var client = new WebClient();
-            client.DownloadFile(repositoryPath, $@"{stagingPath}\tingen-web-service.zip");
-            ZipFile.ExtractToDirectory($@"{stagingPath}\tingen-web-service.zip", $@"{stagingPath}\");
+
+            Lieutenant.DisplayMessage(UserMessage.SourceUrl("download"), useCli);
+            client.DownloadFile(sourceUrl, $@"{stagePath}\tingen-web-service.zip");
+            Lieutenant.DisplayMessage(UserMessage.SourceUrl("downloaded"), useCli);
+
+            Lieutenant.DisplayMessage(UserMessage.SourceUrl("extract"), useCli);
+            ZipFile.ExtractToDirectory($@"{stagePath}\tingen-web-service.zip", $@"{stagePath}\");
+            Lieutenant.DisplayMessage(UserMessage.SourceUrl("extracted"), useCli);
+        }
+
+        private static void DeployService(string stagePath, string deployPath, bool useCli)
+        {
+            // TODO - This should be cleaned up.
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("deploying"), useCli);
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("binpath", stagePath, deployPath), useCli);
+            CopyDirectory($@"{stagePath}\bin\", $@"{deployPath}\bin\");
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("appdatapath", stagePath, deployPath), useCli);
+            CopyDirectory($@"{stagePath}\bin\AppData", $@"{deployPath}\bin\AppData");
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("runtimepath", stagePath, deployPath), useCli);
+            CopyDirectory($@"{stagePath}\bin\AppData\Runtime", $@"{deployPath}\bin\AppData\Runtime");
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("roslyn", stagePath, deployPath), useCli);
+            CopyDirectory($@"{stagePath}\bin\roslyn", $@"{deployPath}\bin\roslyn");
+
+            Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("servicepath", stagePath, deployPath), useCli);
+            CopyDirectory($@"{stagePath}", $@"{deployPath}");
         }
 
         /// <summary>Copies all files and subdirectories from the specified source directory to the target directory.</summary>

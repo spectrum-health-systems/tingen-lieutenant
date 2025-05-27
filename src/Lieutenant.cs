@@ -12,7 +12,7 @@
  * ███████╗██║███████╗╚██████╔╝   ██║   ███████╗██║ ╚████║██║  ██║██║ ╚████║   ██║
  * ╚══════╝╚═╝╚══════╝ ╚═════╝    ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
  *                                             A class library for Tingen projects
- *                                                                          v2.0.0
+ *                                                                          v2.1.0
  *
  * https://github.com/spectrum-health-systems/tingen-lieutenant
  * Copyright (c) A Pretty Cool Program. All rights reserved.
@@ -24,8 +24,18 @@
 
 namespace TingenLieutenant
 {
-    public class Lieutenant
+    public static class Lieutenant
     {
-        // This class is just a placeholder for the TingenLieutenant project.
+        public static void DisplayMessage(string message, bool useCli)
+        {
+            if (useCli)
+            {
+                Console.WriteLine(message);
+            }
+            else
+            {
+                // Placeholder for Tingen Commander GUI output.
+            }
+        }
     }
 }
