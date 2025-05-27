@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.14.36109.1 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TingenLieutenant", "TingenLieutenant.csproj", "{269AF5A4-2DA6-47A3-85D4-B8561DFC312D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TingenLieutenant", "TingenLieutenant.csproj", "{D30C9D1A-EB8D-4B77-A5D1-148041E8737F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{269AF5A4-2DA6-47A3-85D4-B8561DFC312D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{269AF5A4-2DA6-47A3-85D4-B8561DFC312D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{269AF5A4-2DA6-47A3-85D4-B8561DFC312D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{269AF5A4-2DA6-47A3-85D4-B8561DFC312D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D30C9D1A-EB8D-4B77-A5D1-148041E8737F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D30C9D1A-EB8D-4B77-A5D1-148041E8737F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D30C9D1A-EB8D-4B77-A5D1-148041E8737F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D30C9D1A-EB8D-4B77-A5D1-148041E8737F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED2918F8-D5B2-4633-A3E9-2EDB840D8D8E}
 	EndGlobalSection
 EndGlobal
