@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TingenLieutenant</name>
+    </assembly>
+    <members>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.DeploymentProcess(System.String,System.String,System.String)">
+            <summary>Status messages related to the overall deployment process.</summary>
+            <param name="status">The current status of the deployment process.</param>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="deployPath">The location where the Tingen Web Service is deployed.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.DeploymentFramework(System.String)">
+            <summary>Status messages related the deployment framework.</summary>
+            <param name="status">The current status of the deployment framework verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.DeploymentConfiguration(System.String,System.String)">
+            <summary>Status messages related the deployment configuration.</summary>
+            <param name="status">The current status of the deployment configuration verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.SourceType(System.String)">
+            <summary>Status messages related the type of source.</summary>
+            <param name="status">The current status of the source type verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.SourcePath(System.String)">
+            <summary>Status messages related the source path.</summary>
+            <param name="status">The current status of the source path verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.SourceUrl(System.String)">
+            <summary>Status messages related the source url.</summary>
+            <param name="status">The current status of the source URL verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.StagePath(System.String)">
+            <summary>Status messages related the staging path.</summary>
+            <param name="status">The current status of the staging path verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="M:TingenLieutenant.Blueprint.UserMessage.DeployPath(System.String)">
+            <summary>Status messages related the deployment path.</summary>
+            <param name="status">The current status of the deployment path verification process.</param>
+            <returns>A message to display to the user.</returns>
+        </member>
+        <member name="T:TingenLieutenant.Lieutenant">
+            <summary>The main class for Tingen Lieutenant.</summary>
+            <remarks>This class contains general methods for Tingen Lieutenant.</remarks>
+        </member>
+        <member name="M:TingenLieutenant.Lieutenant.DisplayMessage(System.String,System.Boolean)">
+            <summary>Displays a message to the user.</summary>
+            <remarks>
+                If <paramref name="useCli"/> is <see langword="true"/>, the message is written to the console.<br/>
+                <br/>
+                If <paramref name="useCli"/> is <see langword="false"/>, the message is displayed in a graphical user interface (GUI).
+            </remarks>
+            <param name="message">The message to display.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="T:TingenLieutenant.WebService.Deploy">
+            <summary>Logic for deploying the Tingen Web Service.</summary>
+            <remarks>
+                This class is intended to deploy the <i>development branch</i> of the Tingen<br/>
+                Web Service to the server that hosts the Tingen Web Service.<br/>
+                <br/>
+                You can modify the configuration file to deploy any branch to any location,<br/>
+                but performance and security are not guaranteed.
+            </remarks>
+        </member>
+        <member name="P:TingenLieutenant.WebService.Deploy.Source">
+            <summary>The location of the Tingen Web Service that will be deployed.</summary>
+            <remarks>
+                This isn't necessarily a "path", since it can be either a directory or a URL.<br/>
+                <br/>
+                If the RepositoryPath is a URL:
+                <list type="bullet">
+                    <item>It must point to a ".zip" file</item>
+                    <item>It must formatted correctly</item>
+                </list>
+                If the RepositoryPath is a directory:
+                <list type="bullet">
+                    <item>It can be a local directory</item>
+                    <item>It can be a network share/mapped drive</item>
+                </list>
+            </remarks>
+            <value>The default value is "<c>https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip</c>"</value>
+        </member>
+        <member name="P:TingenLieutenant.WebService.Deploy.SourceType">
+            <summary>The type of source.</summary>
+            <remarks>
+                The source type can be either:<br/>
+                <list type="bullet">
+                    <item><c>path</c> - A local directory</item>
+                    <item><c>url</c> - A URL</item>
+                </list>
+            </remarks>
+            <value>Either "<c>path</c>" or "<c>url</c>"</value>
+        </member>
+        <member name="P:TingenLieutenant.WebService.Deploy.StagePath">
+            <summary>The location where the Tingen Web Service is staged for deployment.</summary>
+            <remarks>
+                The StagingPath:<br/>
+                <list type="bullet">
+                    <item>Can be a local directory</item>
+                    <item>Can be a network share/mapped drive</item>
+                </list>
+            </remarks>
+            <value>The default value is "<c>C:\Tingen_Data\DevDeploy\Stage</c>"</value>
+        </member>
+        <member name="P:TingenLieutenant.WebService.Deploy.DeployPath">
+            <summary>The location where the Tingen Web Service is deployed.</summary>
+            <remarks>
+                The DeployPath:<br/>
+                <list type="bullet">
+                    <item>Can be a local directory</item>
+                    <item>Can be a network share/mapped drive</item>
+                </list>
+            </remarks>
+            <value>The default value is "<c>C:\Tingen\UAT</c>"</value>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.DeploymentProcess(System.String,System.Boolean)">
+            <summary>Handles the deployment process from start to finish.</summary>
+            <param name="configPath">The path to the configuration file.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifyFramework(System.Boolean)">
+            <summary> Verifies the deployment framework directory, and creates it if it does not exist.</summary>
+            <remarks>Currently, this method only checks for the existence of the <c>./AppData/</c> directory.</remarks>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifyConfiguration(System.String,System.Boolean)">
+            <summary>Determines the status of the configuration file.</summary>
+            <remarks>If the <paramref name="configPath"/> is invalid, the deployment process will not proceed.</remarks>
+            <param name="configPath">The path to the configuration file.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>
+                The status of the configuration file:
+                <list type="bullet">
+                    <item>null-or-empty: The passed <paramref name="configPath"/> is null/empty</item>
+                    <item>does-not-exist: The config file does not exist at the <paramref name="configPath"/></item>
+                    <item>exists: The config file does exist at the <paramref name="configPath"/></item>
+                </list>
+            </returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.CreateDefaultConfigFile(System.String,System.Boolean)">
+            <summary> Creates a default deployment configuration file at the specified path.</summary>
+            <param name="configPath">The path to the configuration file.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.BuildDefaultConfig(System.String,System.Boolean)">
+            <summary>Builds a default deployment configuration using the specified configuration path.</summary>
+            <param name="configPath">The path to the configuration file.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>A <see cref="T:TingenLieutenant.WebService.Deploy"/> object containing the default deployment settings.</returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.LoadConfigFile(System.String,System.Boolean)">
+            <summary>Loads a deployment configuration file and deserializes its contents into a <see cref="T:TingenLieutenant.WebService.Deploy"/> object.</summary>
+            <param name="configPath">The path to the configuration file.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>A <see cref="T:TingenLieutenant.WebService.Deploy"/> object representing the deserialized contents of the configuration file.</returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.GetSourceType(System.String,System.Boolean)">
+            <summary>Determines the type of the given source based on its format.</summary>
+            <param name="source">The location of the Tingen Web Service that will be deployed.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>A string representing the type of the source.</returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifySourceUrl(System.String,System.Boolean)">
+            <summary>Determines the status of the <see cref="!:sourceUrl"/>.</summary>
+            <remarks>If the sourceUrl is invalid, the deployment process will not proceed.</remarks>
+            <param name="sourceUrl">The URL of the Tingen Web Service that will be deployed.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>
+                The status of the repository path:
+                <list type="bullet">
+                    <item>null-or-empty: The passed <paramref name="sourceUrl"/> is null/empty</item>
+                    <item>invalid-url: The <paramref name="sourceUrl"/> is a URL, and is not formatted correctly</item>
+                    <item>valid-url: The <paramref name="sourceUrl"/> is a URL, and is formatted correctly</item>
+                </list>
+            </returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifySourcePath(System.String,System.Boolean)">
+            <summary>Determines the status of the <see cref="!:sourcePath"/>.</summary>
+            <remarks>If the sourcePath is invalid, the deployment process will not proceed.</remarks>
+            <param name="sourcePath">The path of the Tingen Web Service that will be deployed.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>
+                The status of the repository path:
+                <list type="bullet">
+                    <item>null-or-empty: The passed <paramref name="sourcePath"/> is null/empty</item>
+                    <item>does-not-exist: The <paramref name="sourcePath"/> is a local/shared drive, and does not exist</item>
+                    <item>exists: The <paramref name="sourcePath"/> is a local/shared drive, and does exist</item>
+                </list>
+            </returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifyStagePath(System.String,System.Boolean)">
+            <summary>Determines the status of the <see cref="P:TingenLieutenant.WebService.Deploy.StagePath"/>.</summary>
+            <remarks>If the <paramref name="stagePath"/> is invalid, the deployment process will not proceed.</remarks>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>
+                The status of the staging path:
+                <list type="bullet">
+                    <item>null-or-empty: The passed <paramref name="stagePath"/> is null/empty</item>
+                    <item>does-not-exist: The <paramref name="stagePath"/> does not exist</item>
+                    <item>exists: The <paramref name="stagePath"/> does exist</item>
+                </list>
+            </returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.VerifyDeployPath(System.String,System.Boolean)">
+            <summary>Determines the status of the <see cref="P:TingenLieutenant.WebService.Deploy.DeployPath"/>.</summary>
+            <remarks>
+                If the <paramref name="deployPath"/> is invalid, the deployment process will not proceed.
+            </remarks>
+            <param name="deployPath">The location where the Tingen Web Service is deployed.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+            <returns>
+                The status of the deployment path:
+                <list type="bullet">
+                    <item>null-or-empty: The passed <paramref name="deployPath"/> is null/empty</item>
+                    <item>does-not-exist: The <paramref name="deployPath"/> does not exist</item>
+                    <item>exists: The <paramref name="deployPath"/> does exist</item>
+                </list>
+            </returns>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.RefreshStagePath(System.String,System.Boolean)">
+            <summary>Cleans and recreates the staging directory.</summary>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.RefreshDeployPath(System.String,System.Boolean)">
+            <summary>Cleans and prepares the specified target.</summary>
+            <param name="deployPath">The location where the Tingen Web Service is deployed.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.DownloadSourceUrl(System.String,System.String,System.Boolean)">
+            <summary>Downloads and extracts a remote repository.</summary>
+            <param name="sourceUrl">The URL of the Tingen Web Service that will be deployed.</param>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.DeployService(System.String,System.String,System.Boolean)">
+            <summary>Deploys a service by copying files from the staging path to the deployment path.</summary>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="deployPath">The location where the Tingen Web Service is deployed.</param>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.CopyDirectory(System.String,System.String)">
+            <summary>Copies all files and subdirectories from the specified source directory to the target directory.</summary>
+            <param name="stagePath">The location where the Tingen Web Service is staged for deployment.</param>
+            <param name="deployPath">The location where the Tingen Web Service is deployed.</param>
+        </member>
+        <member name="M:TingenLieutenant.WebService.Deploy.ExitDeployment(System.Boolean)">
+            <summary>Terminates the deployment process and exits the application.</summary>
+            <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
+        </member>
+    </members>
+</doc>
