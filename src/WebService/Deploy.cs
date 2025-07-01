@@ -8,8 +8,8 @@
  *                         TingenLieutenant.WebService.Deploy.cs
  */
 
-/* u250603_code
- * u250603_documentation
+/* u250625_code
+ * u250625_documentation
  */
 
 using System.IO.Compression;
@@ -95,7 +95,7 @@ namespace TingenLieutenant.WebService
         /// <summary>Handles the deployment process from start to finish.</summary>
         /// <param name="configPath">The path to the configuration file.</param>
         /// <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
-        public static void DeploymentProcess(string configPath, bool useCli)
+        public static void DeploymentProcess(string configPath, string arg, bool useCli)
         {
             Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("start"), useCli);
 
@@ -105,8 +105,11 @@ namespace TingenLieutenant.WebService
 
             Deploy deployConfig = LoadConfigFile(configPath, useCli);
 
-            VerifyArchivePath(deployConfig.ArchivePath, useCli);
-            ArchiveExistingService(deployConfig.ArchivePath, deployConfig.DeployPath, useCli);
+            if (arg == "-a")
+            {
+                VerifyArchivePath(deployConfig.ArchivePath, useCli);
+                ArchiveExistingService(deployConfig.ArchivePath, deployConfig.DeployPath, useCli);
+            }
 
             VerifyStagePath(deployConfig.StagePath, useCli);
             RefreshStagePath(deployConfig.StagePath, useCli);
@@ -279,7 +282,7 @@ namespace TingenLieutenant.WebService
         {
             Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("archiving"), useCli);
 
-            var dateTime = DateTime.Now.ToString("yyMMddHHmmss");
+            var dateTime = DateTime.Now.ToString("yyMMdd-HHmmss");
             ZipFile.CreateFromDirectory(deployPath, $@"{archivePath}\{dateTime}.zip");
 
             Lieutenant.DisplayMessage(UserMessage.DeploymentProcess("archived"), useCli);
