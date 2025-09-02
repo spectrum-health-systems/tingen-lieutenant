@@ -1,20 +1,12 @@
-﻿/* ██████ ██ ███  ██  ██    █████ ███  ██
- *   ██   ██ ██ █ ██ ██  ██ ███   ██ █ ██
- *   ██   ██ ██  ███  ████  █████ ██  ███
- *
- * ██    ██ █████ ██  ██ ██████ █████ ███  ██  ███  ███  ██ ██████
- * ██    ██ ███   ██  ██   ██   ███   ██ █ ██ █████ ██ █ ██   ██
- * █████ ██ █████  ████    ██   █████ ██  ███ ██ ██ ██  ███   ██
- *                     TingenLieutenant.Blueprint.UserMessage.cs
- */
-
-/* u250625_code
+﻿/* TingenLieutenant.Blueprint.UserMessage.DevDeploy.cs
+ * u250625_code
  * u250625_documentation
  */
 
 namespace TingenLieutenant.Blueprint
 {
-    internal static class UserMessage
+    /// <summary>Contains user messages for the Tingen DevDeploy deployment process.</summary>
+    internal static partial class UserMessage
     {
         /// <summary>Status messages related to the overall deployment process.</summary>
         /// <param name="status">The current status of the deployment process.</param>

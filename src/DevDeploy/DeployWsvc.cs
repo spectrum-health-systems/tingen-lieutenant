@@ -1,14 +1,5 @@
-﻿/* ██████ ██ ███  ██  ██    █████ ███  ██
- *   ██   ██ ██ █ ██ ██  ██ ███   ██ █ ██
- *   ██   ██ ██  ███  ████  █████ ██  ███
- *
- * ██    ██ █████ ██  ██ ██████ █████ ███  ██  ███  ███  ██ ██████
- * ██    ██ ███   ██  ██   ██   ███   ██ █ ██ █████ ██ █ ██   ██
- * █████ ██ █████  ████    ██   █████ ██  ███ ██ ██ ██  ███   ██
- *                         TingenLieutenant.WebService.Deploy.cs
- */
-
-/* u250625_code
+﻿/* TingenLieutenant.WebService.Deploy.cs
+ * u250625_code
  * u250625_documentation
  */
 
@@ -18,7 +9,7 @@ using System.Text.Json;
 
 using TingenLieutenant.Blueprint;
 
-namespace TingenLieutenant.WebService
+namespace TingenLieutenant.DevDeploy
 {
     /// <summary>Logic for deploying the Tingen Web Service.</summary>
     /// <remarks>
@@ -28,7 +19,7 @@ namespace TingenLieutenant.WebService
     ///     You can modify the configuration file to deploy any branch to any location,<br/>
     ///     but performance and security are not guaranteed.
     /// </remarks>
-    public class Deploy
+    public class DeployWsvc
     {
         /// <summary>The location where the existing Tingen Web Service is archived.</summary>
         /// <remarks>
@@ -103,7 +94,7 @@ namespace TingenLieutenant.WebService
 
             VerifyConfiguration(configPath, useCli);
 
-            Deploy deployConfig = LoadConfigFile(configPath, useCli);
+            DeployWsvc deployConfig = LoadConfigFile(configPath, useCli);
 
             if (arg == "-a")
             {
@@ -198,7 +189,7 @@ namespace TingenLieutenant.WebService
         public static void CreateDefaultConfigFile(string configPath, bool useCli)
         {
             Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("creating"), useCli);
-            Deploy defaultConfig = BuildDefaultConfig(configPath, useCli);
+            DeployWsvc defaultConfig = BuildDefaultConfig(configPath, useCli);
             Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("created", configPath), useCli);
 
             var deployJson = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions
@@ -213,12 +204,12 @@ namespace TingenLieutenant.WebService
         /// <summary>Builds a default deployment configuration using the specified configuration path.</summary>
         /// <param name="configPath">The path to the configuration file.</param>
         /// <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
-        /// <returns>A <see cref="Deploy"/> object containing the default deployment settings.</returns>
-        public static Deploy BuildDefaultConfig(string configPath, bool useCli)
+        /// <returns>A <see cref="DeployWsvc"/> object containing the default deployment settings.</returns>
+        public static DeployWsvc BuildDefaultConfig(string configPath, bool useCli)
         {
             Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("building", configPath), useCli);
 
-            return new Deploy
+            return new DeployWsvc
             {
                 Source      = "https://github.com/spectrum-health-systems/Tingen-WebService/archive/refs/heads/development.zip",
                 SourceType  = "",
@@ -228,17 +219,17 @@ namespace TingenLieutenant.WebService
             };
         }
 
-        /// <summary>Loads a deployment configuration file and deserializes its contents into a <see cref="Deploy"/> object.</summary>
+        /// <summary>Loads a deployment configuration file and deserializes its contents into a <see cref="DeployWsvc"/> object.</summary>
         /// <param name="configPath">The path to the configuration file.</param>
         /// <param name="useCli">Determines if the message will be displayed on the CLI or the GUI.</param>
-        /// <returns>A <see cref="Deploy"/> object representing the deserialized contents of the configuration file.</returns>
-        public static Deploy LoadConfigFile(string configPath, bool useCli)
+        /// <returns>A <see cref="DeployWsvc"/> object representing the deserialized contents of the configuration file.</returns>
+        public static DeployWsvc LoadConfigFile(string configPath, bool useCli)
         {
             Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("loading"), useCli);
             var deployConfig = File.ReadAllText(configPath);
             Lieutenant.DisplayMessage(UserMessage.DeploymentConfiguration("loaded"), useCli);
 
-            return JsonSerializer.Deserialize<Deploy>(deployConfig);
+            return JsonSerializer.Deserialize<DeployWsvc>(deployConfig);
         }
 
         /// <summary>Determines the status of the <see cref="ArchivePath"/>.</summary>

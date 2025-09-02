@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <Version>2.2.0</Version>
-      <FileVersion>2.2.0</FileVersion>
+      <Version>2.3.0</Version>
+      <FileVersion>2.3.0</FileVersion>
       <TargetFramework>net9.0</TargetFramework>
       <ImplicitUsings>enable</ImplicitUsings>
       <Nullable>enable</Nullable>
@@ -10,5 +10,10 @@
       <GenerateDocumentationFile>True</GenerateDocumentationFile>
       <DocumentationFile>..\..\tingen-documentation\sfhb\generated-xml\tingen-lieutenant.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="EraProcessor.cs\" />
+    <Folder Include="Du\" />
+  </ItemGroup>
 
 </Project>
